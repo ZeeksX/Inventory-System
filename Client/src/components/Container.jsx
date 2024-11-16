@@ -41,7 +41,7 @@ const Container = () => {
   }, []);
 
   return (
-    <div className="ml-64 w-full bg-[#f4f4f4] p-8">
+    <div className="w-auto bg-[#f4f4f4] p-8 md:ml-64 sm:ml-0 min-h-screen">
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">

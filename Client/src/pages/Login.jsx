@@ -1,21 +1,21 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import Logo from "../assets/inventory-logo.svg";
 import PersonIcon from '@mui/icons-material/Person';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { TextField, InputAdornment, FormControl, OutlinedInput, IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { TextField, InputAdornment, FormControl, OutlinedInput, IconButton, Button } from "@mui/material";
 import "../styles/main.css";
+import ForgotPassword from '../components/modals/ForgotPassword'; // Import the ForgotPassword component
+import RegistrationModal from '../components/modals/RegistrationModal'; // Import the RegistrationModal component
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [open, setOpen] = useState(false); // State for modal
-    const [registerEmail, setRegisterEmail] = useState("");
-    const [registerPassword, setRegisterPassword] = useState("");
-    const [registerUsername, setRegisterUsername] = useState("");
-    const [registerRole, setRegisterRole] = useState("");
+    const [open, setOpen] = useState(false); // State for registration modal
+    const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+
     const navigate = useNavigate();
 
     const navItems = ["Home", "About", "Contact"];
@@ -50,36 +50,19 @@ const Login = () => {
         }
     };
 
-
-    const handleRegisterSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            const res = await fetch("http://localhost:3000/api/v1/users/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ username: registerUsername, email: registerEmail, password: registerPassword, role: registerRole }),
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                console.log(data);
-                setOpen(false); // Close the modal on successful registration
-            } else {
-                console.error("Registration failed:", res.statusText);
-            }
-        } catch (error) {
-            console.error("API link not working", error);
-        }
-    };
-
     const handleClickOpen = () => {
         setOpen(true);
     };
 
-    const handleClose = () => {
+    const handleForgotPasswordOpen = () => {
+        setForgotPasswordOpen(true);
+    };
+
+    const handleForgotPasswordClose = () => {
+        setForgotPasswordOpen(false);
+    };
+
+    const handleRegistrationClose = () => {
         setOpen(false);
     };
 
@@ -150,66 +133,13 @@ const Login = () => {
                             >
                                 Log in
                             </button>
-                            <h3 className="text-blue-900 hover:text-gray-600 cursor-pointer">Forgot Password?</h3>
+                            <h3 onClick={handleForgotPasswordOpen} className="text-blue-900 hover:text-gray-600 cursor-pointer">Forgot Password?</h3>
                         </div>
                     </form>
+                    <ForgotPassword open={forgotPasswordOpen} onClose={handleForgotPasswordClose} />
+                    <RegistrationModal open={open} onClose={handleRegistrationClose} />
                 </div>
             </div>
-
-            {/* Registration Modal */}
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Register</DialogTitle>
-                <DialogContent>
-                    <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-4">
-                        <TextField
-                            fullWidth
-                            type="email"
-                            variant="outlined"
-                            placeholder="Email"
-                            onChange={(event) => setRegisterEmail(event.target.value)}
-                        />
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            placeholder="Username"
-                            onChange={(event) => setRegisterUsername(event.target.value)}
-                        />
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            placeholder="Role"
-                            onChange={(event) => setRegisterRole(event.target.value)}
-                        />
-                        <FormControl variant="outlined" fullWidth>
-                            <OutlinedInput
-                                id="outlined-adornment-register-password"
-                                placeholder="Password"
-                                onChange={(event) => setRegisterPassword(event.target.value)}
-                                type={showPassword ? 'text' : 'password'}
-                                startAdornment={
-                                    <InputAdornment position="start">
-                                        <IconButton
-                                            aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
-                                            edge="start">
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                            />
-                        </FormControl>
-                    </form>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleRegisterSubmit} color="primary">
-                        Submit
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </>
     );
 };

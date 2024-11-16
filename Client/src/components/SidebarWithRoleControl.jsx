@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAuth } from './Auth'; // Import the useAuth hook
 import SalesSidebar from './sidebars/SalesSidebar'; // Import your SalesSidebar component
-import ManagerSidebar from './sidebars/ManagerSidebar'; // Import your ManagerSidebar component
-import DefaultSidebar from './Sidebar'; // Import the default Sidebar
+import ManagerSidebar from './sidebars/ManagerSidebar'; 
+import DefaultSidebar from './Sidebar'; 
 
 const SidebarWithRoleControl = () => {
     const { user } = useAuth();
@@ -24,3 +24,4 @@ const SidebarWithRoleControl = () => {
 };
 
 export default SidebarWithRoleControl;
+
