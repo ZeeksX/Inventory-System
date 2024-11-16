@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl'; // Import the SidebarWithRoleControl
 import { AuthProvider } from '../components/Auth';
+import TopNav from '../components/topnav/TopNav';
 
-const Sales = () => {
+const Sales = ({ sidebarOpen, toggleSidebar }) => {
   // Sample sales data
   const [sales, setSales] = useState([
     { id: 1, model: 'iPhone 13', price: 799, quantity: 1, date: '2023-10-01' },
@@ -16,9 +17,10 @@ const Sales = () => {
 
   return (
     <AuthProvider>
-      <div className="home-page flex flex-row w-full min-h-screen">
+      <div className="home-page flex flex-col sm:flex-row w-full min-h-screen">
         <SidebarWithRoleControl />
-        <div className="ml-64 w-full bg-[#f4f4f4] p-8">
+        <TopNav sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+        <div className="ml-0 sm:ml-64 w-full bg-[#f4f4f4] p-8">
           <h1 className="text-3xl font-bold mb-6">Sales</h1>
 
           <div className="bg-white p-6 flex flex-row justify-between rounded-lg shadow-md mb-6">

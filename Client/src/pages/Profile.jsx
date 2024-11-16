@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider } from '../components/Auth';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
+import TopNav from '../components/topnav/TopNav';
 
-const Profile = () => {
+const Profile = ({sidebarOpen, toggleSidebar}) => {
   const [user, setUser ] = useState({
     name: 'John Doe',
     email: 'john.doe@example.com',
@@ -43,9 +44,10 @@ const Profile = () => {
 
   return (
     <AuthProvider>
-      <div className="home-page flex flex-row w-full min-h-screen">
+     <div className="home-page flex flex-col sm:flex-row w-full min-h-screen">
         <SidebarWithRoleControl />
-        <div className="ml-64 w-full bg-[#f4f4f4] p-8">
+        <TopNav sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+        <div className="ml-0 sm:ml-64 w-full bg-[#f4f4f4] p-8">
           
           
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
