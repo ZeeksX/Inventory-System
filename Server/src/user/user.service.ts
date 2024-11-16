@@ -37,20 +37,23 @@ export class UserService {
   }
 
   // Minimal login feature with email and password validation
-  async login(email: string, password: string): Promise<{ message: string }> {
+  async login(email: string, password: string) {
     const user = await this.usersRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const passwordMatches = await bcrypt.compare(password, user.password);
-
-    if (!passwordMatches) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return { message: 'Login successful' };
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    const token = this.jwtService.sign(payload);
+
+    return { accessToken: token };
   }
   // Return all users (admin only)
   async findAll(): Promise<User[]> {
