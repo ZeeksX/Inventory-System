@@ -18,11 +18,11 @@ export class Product {
   @Column()
   name: string;
 
-  @Column()
-  sku: string;
+  // @Column()
+  // sku: string;
 
-  @Column('text')
-  description: string;
+  // @Column('text')
+  // description: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
