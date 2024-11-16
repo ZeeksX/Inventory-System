@@ -4,11 +4,11 @@ export class CreateProductDto {
   @IsString()
   name: string;
 
-  @IsString()
-  sku: string;
+  // @IsString()
+  // sku: string;
 
-  @IsString()
-  description: string;
+  // @IsString()
+  // description: string;
 
   @IsNumber()
   price: number;
