@@ -11,7 +11,7 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
 
   const getUsers = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/v1/users", {
+      const res = await fetch("http://localhost:3006/api/v1/users", {
         method: "GET",
       });
       if (res.ok) {

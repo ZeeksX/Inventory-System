@@ -23,7 +23,7 @@ const Container = () => {
 
   const getUsers = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/v1/users", {
+      const res = await fetch("http://localhost:3006/api/v1/users", {
         method: "GET",
       });
       if (res.ok) {
@@ -39,7 +39,7 @@ const Container = () => {
 
   const getOrders = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/v1/orders", {
+      const res = await fetch("http://localhost:3006/api/v1/orders", {
         method: "GET",
       });
       if (res.ok) {

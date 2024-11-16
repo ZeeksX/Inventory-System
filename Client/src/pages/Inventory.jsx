@@ -98,35 +98,43 @@ const Inventory = ({ sidebarOpen, toggleSidebar }) => {
                     </div>
 
                     {/* Inventory Table */}
-                    <div className="bg-white p-6 rounded-lg shadow-md">
+                    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
                         <table className="min-w-full">
                             <thead>
                                 <tr className="bg-gray-200">
-                                    <th className="py-2 px-4 text-left">Model</th>
-                                    <th className="py-2 px-4 text-left">Price</th>
-                                    <th className="py-2 px-4 text-left">Quantity</th>
-                                    <th className="py-2 px-4 text-left hidden sm:flex">Actions</th>
+                                    <th className="py-2 px-1 sm:px-4 text-left">Model</th>
+                                    <th className="py-2 px-1 sm:px-4 text-left">Price</th>
+                                    <th className="py-2 px-1 sm:px-4 text-left">
+                                        <span className="hidden sm:inline">Quantity</span>
+                                        <span className="inline sm:hidden">Qty</span>
+                                    </th>
+                                    <th className="py-2 px-1 sm:px-4 text-left">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {inventory.map(item => (
                                     <tr key={item.id} className="border-b">
-                                        <td className="py-2 px-4">{item.model}</td>
-                                        <td className="py-2 px-4">${item.price}</td>
-                                        <td className="py-2 px-4">{item.quantity}</td>
-                                        <td className="py-2 px-4 hidden sm:flex">
-                                            <button
-                                                onClick={() => handleAddStock(item.id)}
-                                                className="bg-green-500 text-white px-2 py-1 rounded-md mr-2"
-                                            >
-                                                Add Stock
-                                            </button>
-                                            <button
-                                                onClick={() => handleRemoveStock(item.id)}
-                                                className="bg-red-500 text-white px-2 py-1 rounded-md"
-                                            >
-                                                Remove Stock
-                                            </button>
+                                        <td className="py-2 px-1 sm:px-4">{item.model}</td>
+                                        <td className="py-2 px-1 sm:px-4">${item.price}</td>
+                                        <td className="py-2 px-1 sm:px-4">{item.quantity}</td>
+                                        <td className="py-2 px-1 sm:px-4">
+                                            <div className='flex sm:flex-row flex-col gap-2 '>
+                                                <button
+                                                    onClick={() => handleAddStock(item.id)}
+                                                    className="bg-green-500 text-white px-2 py-1 rounded-md mr-1 sm:mr-2"
+                                                >
+                                                    <span className="hidden sm:inline">Add Stock</span>
+                                                    <span className="inline sm:hidden">Add</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => handleRemoveStock(item.id)}
+                                                    className="bg-red-500 text-white px-2 py-1 rounded-md mr-1 sm:mr-2"
+                                                >
+                                                    <span className="hidden sm:inline">Remove Stock</span>
+                                                    <span className="inline sm:hidden">Remove</span>
+                                                </button>
+                                            </div>
+
                                         </td>
                                     </tr>
                                 ))}
