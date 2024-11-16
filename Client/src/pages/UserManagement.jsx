@@ -1,18 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider } from '../components/Auth';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
 import TopNav from '../components/topnav/TopNav';
 
 const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
   // Sample user data
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
-    { id: 3, name: 'Alice Johnson', email: 'alice@example.com', role: 'User' },
-  ]);
-
+  const [users, setUsers] = useState([]); // Initialize as an empty array
   const [newUser, setNewUser] = useState({ name: '', email: '', role: '' });
   const [editingUser, setEditingUser] = useState(null);
+
+  const getUsers = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/api/v1/users", {
+        method: "GET",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data); // Set the fetched users
+      } else {
+        console.error("Failed to fetch users:", res.statusText);
+      }
+    } catch (error) {
+      console.error("API link not working", error);
+    }
+  };
+
+  useEffect(() => {
+    getUsers(); // Call getUsers when the component mounts
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,7 +41,11 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
   const handleAddUser = (e) => {
     e.preventDefault();
     if (newUser.name && newUser.email && newUser.role) {
-      setUsers([...users, { id: users.length + 1, ...newUser }]);
+      const newUserWithId = {
+        id: users.length ? Math.max(users.map(user => user.id)) + 1 : 1, // Generate new ID
+        ...newUser,
+      };
+      setUsers([...users, newUserWithId]); // Add new user
       setNewUser({ name: '', email: '', role: '' }); // Reset form
     }
   };
@@ -115,7 +134,7 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
               <tbody>
                 {users.map(user => (
                   <tr key={user.id} className="border-b">
-                    <td className="py-2 px-4">{user.name}</td>
+                    <td className="py-2 px-4">{user.username}</td>
                     <td className="py-2 px-4">{user.email}</td>
                     <td className="py-2 px-4">{user.role}</td>
                     <td className="py-2 px-4">

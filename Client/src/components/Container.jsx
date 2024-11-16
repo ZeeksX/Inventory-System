@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 const Container = () => {
   const [totalUsers, setTotalUsers] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
 
   // Sample data for the chart
   const data = {
@@ -27,7 +28,7 @@ const Container = () => {
       });
       if (res.ok) {
         const data = await res.json();
-        setTotalUsers(data.length);
+        setTotalUsers(data.length); // Set total users
       } else {
         console.error("Failed to fetch users:", res.statusText);
       }
@@ -36,8 +37,33 @@ const Container = () => {
     }
   };
 
+  const getOrders = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/api/v1/orders", {
+        method: "GET",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTotalOrders(data.length); // Set total orders
+        console.log(data); // Log the fetched orders
+      } else {
+        console.error("Failed to fetch orders:", res.statusText);
+      }
+    } catch (error) {
+      console.error("API link not working", error);
+    }
+  };
+
   useEffect(() => {
-    getUsers(); // Call getUsers when the component mounts
+    const fetchData = async () => {
+      try {
+        await Promise.all([getUsers(), getOrders()]); // Fetch users and orders concurrently
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData(); // Call the fetchData function
   }, []);
 
   return (
@@ -60,7 +86,7 @@ const Container = () => {
         {/* Card 3: Total Orders */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold">Total Orders</h2>
-          <p className="text-2xl font-bold">567</p>
+          <p className="text-2xl font-bold">{totalOrders}</p> {/* Display total orders */}
         </div>
       </div>
 
@@ -72,12 +98,12 @@ const Container = () => {
 
       {/* Recent Activity Section */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+        <h2 className="text -xl font-semibold mb-4">Recent Activity</h2>
         <ul>
-          <li className="border-b py-2">User   John Doe made a purchase of $100.</li>
-          <li className="border-b py-2">User   Jane Smith registered.</li>
-          <li className="border-b py-2">User   Alex Johnson updated their profile.</li>
-          <li className="border-b py-2">User   Emily Davis made a purchase of $50.</li>
+          <li className="border-b py-2">User  John Doe made a purchase of $100.</li>
+          <li className="border-b py-2">User  Jane Smith registered.</li>
+          <li className="border-b py-2">User  Alex Johnson updated their profile.</li>
+          <li className="border-b py-2">User  Emily Davis made a purchase of $50.</li>
         </ul>
       </div>
     </div>
