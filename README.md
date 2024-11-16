@@ -123,7 +123,7 @@ Ensure you have the following tools installed:
 ### Access the Application
 
 - **Frontend**: Open `http://localhost:5173` in your browser to access the client-side of the application.
-- **Backend API**: The API is accessible at `http://localhost:3000/api`.
+- **Backend API**: The API is accessible at `http://localhost:3000/api/v1`.
 
 ---
 
