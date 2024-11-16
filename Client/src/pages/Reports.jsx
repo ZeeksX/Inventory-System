@@ -4,7 +4,7 @@ import { PDFDownloadLink, Document, Page, Text, View } from '@react-pdf/renderer
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const Reports = () => {
+const Reports = ({toggleSidebar, sidebarOpen}) => {
   // Sample data for sales, orders, and services
   const [sales, setSales] = useState([
     { id: 1, model: 'iPhone 13', price: 799, quantity: 1, date: '2023-10-01' },

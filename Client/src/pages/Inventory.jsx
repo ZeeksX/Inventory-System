@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import SidebarWithRoleControl from '../components/SidebarWithRoleControl'; // Import the SidebarWithRoleControl
+import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
 import { AuthProvider } from '../components/Auth';
+import TopNav from '../components/topnav/TopNav';
 
-const Inventory = () => {
-    // Sample inventory data
+const Inventory = ({ sidebarOpen, toggleSidebar }) => {
     const [inventory, setInventory] = useState([
         { id: 1, model: 'iPhone 13', price: 799, quantity: 10 },
         { id: 2, model: 'Samsung Galaxy S21', price: 699, quantity: 5 },
@@ -11,7 +11,6 @@ const Inventory = () => {
         { id: 4, model: 'OnePlus 9', price: 729, quantity: 3 },
     ]);
 
-    // State for new phone input
     const [newPhone, setNewPhone] = useState({ model: '', price: '', quantity: '' });
 
     const handleAddStock = (id) => {
@@ -46,9 +45,10 @@ const Inventory = () => {
 
     return (
         <AuthProvider>
-            <div className="home-page flex flex-row w-full min-h-screen">
+            <div className="home-page flex flex-col sm:flex-row w-full min-h-screen">
                 <SidebarWithRoleControl />
-                <div className="ml-64 w-full bg-[#f4f4f4] p-8">
+                <TopNav sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+                <div className="ml-0 w-full bg-[#f4f4f4] p-8 sm:ml-64">
                     <h1 className="text-3xl font-bold mb-6">Inventory</h1>
 
                     {/* Add New Phone Card */}
@@ -105,7 +105,7 @@ const Inventory = () => {
                                     <th className="py-2 px-4 text-left">Model</th>
                                     <th className="py-2 px-4 text-left">Price</th>
                                     <th className="py-2 px-4 text-left">Quantity</th>
-                                    <th className="py-2 px-4 text-left">Actions</th>
+                                    <th className="py-2 px-4 text-left hidden sm:flex">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -114,7 +114,7 @@ const Inventory = () => {
                                         <td className="py-2 px-4">{item.model}</td>
                                         <td className="py-2 px-4">${item.price}</td>
                                         <td className="py-2 px-4">{item.quantity}</td>
-                                        <td className="py-2 px-4">
+                                        <td className="py-2 px-4 hidden sm:flex">
                                             <button
                                                 onClick={() => handleAddStock(item.id)}
                                                 className="bg-green-500 text-white px-2 py-1 rounded-md mr-2"

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { AuthProvider } from '../components/Auth';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
+import TopNav from '../components/topnav/TopNav';
 
-const UserManagement = () => {
+const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
   // Sample user data
   const [users, setUsers] = useState([
     { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
@@ -48,9 +49,10 @@ const UserManagement = () => {
 
   return (
     <AuthProvider>
-      <div className="home-page flex flex-row w-full min-h-screen">
+      <div className="home-page flex flex-col sm:flex-row w-full min-h-screen">
         <SidebarWithRoleControl />
-        <div className="ml-64 w-full bg-[#f4f4f4] p-8">
+        <TopNav sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+        <div className="ml-0 w-full bg-[#f4f4f4] p-8 sm:ml-64">
 
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-xl font-semibold mb-4">{editingUser ? 'Edit User' : 'Add New User'}</h2>

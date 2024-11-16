@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { AuthProvider } from '../components/Auth';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
+import TopNav from '../components/topnav/TopNav';
 
-const Service = () => {
+const Service = ({toggleSidebar, sidebarOpen}) => {
   // Sample service requests data
   const [serviceRequests, setServiceRequests] = useState([
     { id: 1, customerName: 'John Doe', phoneModel: 'iPhone 13', issue: 'Screen Replacement', date: '2023-10-01' },
@@ -31,9 +32,10 @@ const Service = () => {
 
   return (
     <AuthProvider>
-      <div className="home-page flex flex-row w-full min-h-screen">
+      <div className="home-page flex flex-col sm:flex-row w-full min-h-screen">
         <SidebarWithRoleControl />
-        <div className="ml-64 w-full bg-[#f4f4f4] p-8">
+        <TopNav sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+        <div className="ml-0 sm:ml-64 w-full bg-[#f4f4f4] p-8">
           <h1 className="text-3xl font-bold mb-6">Service Requests</h1>
 
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
