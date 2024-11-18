@@ -9,7 +9,7 @@ import "../styles/main.css";
 import ForgotPassword from '../components/modals/ForgotPassword'; // Import the ForgotPassword component
 import RegistrationModal from '../components/modals/RegistrationModal'; // Import the RegistrationModal component
 
-const Login = () => {
+const Login = ({ onLogin }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -41,6 +41,7 @@ const Login = () => {
             if (res.ok) {
                 const data = await res.json();
                 console.log(data);
+                onLogin();
                 navigate("/dashboard"); // Navigate to /dashboard on successful login
             } else {
                 console.error("Login failed:", res.statusText);
@@ -72,7 +73,7 @@ const Login = () => {
                 <nav className="flex flex-row items-center w-full h-8 justify-between p-8 mb-4">
                     <div className="flex flex-row w-1/4 items-center">
                         <img src={Logo} alt="header-logo" className="w-1/3" />
-                        <h3 className="text-[black] text-3xl font-semibold">InventoryHUB</h3>
+                        <h3 className="text-[black] text-3xl font-semibold">Inventory HUB</h3>
                     </div>
 
                     <div className="flex flex-row gap-8 justify-between">
