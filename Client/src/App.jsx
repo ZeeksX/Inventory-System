@@ -22,7 +22,7 @@ const App = () => {
 
     <Router>
       <Routes>
-        <Route path="/" element={<Login onLogin={handleLogin} />} />
+        <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<HomePage sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
         <Route path="/inventory" element={<Inventory sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
         <Route path="/management" element={<UserManagement sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />

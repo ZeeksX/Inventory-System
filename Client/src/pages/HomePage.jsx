@@ -23,7 +23,7 @@ const HomePage = ({ sidebarOpen, toggleSidebar }) => {
     <AuthProvider>
         <div className="home-page flex sm:flex-row flex-col w-full min-h-screen">
             {/* Sidebar for larger screens */}
-            <div className="hidden sm:flex">
+            <div className="hidden sm:flex w-64">
                 <SidebarWithRoleControl />
             </div>
 
@@ -32,7 +32,7 @@ const HomePage = ({ sidebarOpen, toggleSidebar }) => {
 
             {/* Main content container */}
             {!sidebarOpen && (
-                <div className={`flex-1 sm:ml-64 ml:0 w-full ${scrolling ? 'pt-14' : ''} transition-padding duration-300`}>
+                <div className={`flex-1 w-full ${scrolling ? 'pt-14' : ''} transition-padding duration-300`}>
                     <Container />
                 </div>
             )}

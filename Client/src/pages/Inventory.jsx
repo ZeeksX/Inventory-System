@@ -48,7 +48,7 @@ const Inventory = ({ sidebarOpen, toggleSidebar }) => {
             <div className="home-page flex flex-col sm:flex-row w-full min-h-screen">
                 <SidebarWithRoleControl />
                 <TopNav sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-                <div className="ml-0 w-full bg-[#f4f4f4] p-8 sm:ml-64">
+                <div className="sm:ml-64 w-full bg-[#f4f4f4] p-8 ml-0">
                     <h1 className="text-3xl font-bold mb-6">Inventory</h1>
 
                     {/* Add New Phone Card */}

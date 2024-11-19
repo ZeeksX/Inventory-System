@@ -9,7 +9,7 @@ import "../styles/main.css";
 import ForgotPassword from '../components/modals/ForgotPassword'; // Import the ForgotPassword component
 import RegistrationModal from '../components/modals/RegistrationModal'; // Import the RegistrationModal component
 
-const Login = ({ onLogin }) => {
+const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -41,8 +41,7 @@ const Login = ({ onLogin }) => {
             if (res.ok) {
                 const data = await res.json();
                 console.log(data);
-                onLogin();
-                navigate("/dashboard"); // Navigate to /dashboard on successful login
+                navigate("/dashboard"); 
             } else {
                 console.error("Login failed:", res.statusText);
             }

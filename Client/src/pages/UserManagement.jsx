@@ -122,39 +122,42 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
 
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4">User  List</h2>
-            <table className="min-w-full bg-white border border-gray-300">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="py-2 px-4 text-left">Name</th>
-                  <th className="py-2 px-4 text-left">Email</th>
-                  <th className="py-2 px-4 text-left">Role</th>
-                  <th className="py-2 px-4 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map(user => (
-                  <tr key={user.id} className="border-b">
-                    <td className="py-2 px-4">{user.username}</td>
-                    <td className="py-2 px-4">{user.email}</td>
-                    <td className="py-2 px-4">{user.role}</td>
-                    <td className="py-2 px-4">
-                      <button
-                        onClick={() => handleEditUser(user)}
-                        className="text-blue-500 hover:underline mr-2"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="text-red-500 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </td>
+            <div className='overflow-scroll sm:overflow-hidden'>
+              <table className=" min-w-full bg-white border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="py-2 px-4 text-left">Name</th>
+                    <th className="py-2 px-4 text-left">Email</th>
+                    <th className="py-2 px-4 text-left">Role</th>
+                    <th className="py-2 px-4 text-left">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {users.map(user => (
+                    <tr key={user.id} className="border-b">
+                      <td className="py-2 px-4">{user.username}</td>
+                      <td className="py-2 px-4">{user.email}</td>
+                      <td className="py-2 px-4">{user.role}</td>
+                      <td className="py-2 px-4">
+                        <button
+                          onClick={() => handleEditUser(user)}
+                          className="text-blue-500 hover:underline mr-2"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="text-red-500 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
           </div>
         </div>
       </div>
