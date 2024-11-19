@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../components/Auth"; // Import the AuthContext
+import { useAuth } from "../components/Auth"; 
 import Logo from "../assets/inventory-logo.svg";
 import PersonIcon from '@mui/icons-material/Person';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { TextField, InputAdornment, FormControl, OutlinedInput, IconButton, Button } from "@mui/material";
+import { TextField, InputAdornment, FormControl, OutlinedInput, IconButton } from "@mui/material";
 import "../styles/main.css";
 import ForgotPassword from '../components/modals/ForgotPassword';
 import RegistrationModal from '../components/modals/RegistrationModal';
+import Toast from '../components/modals/Toast'; // Import the Toast component
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -16,16 +17,14 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [open, setOpen] = useState(false);
     const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+    const [toastOpen, setToastOpen] = useState(false); // State for toast visibility
+    const [toastMessage, setToastMessage] = useState(""); // State for toast message
 
     const auth = useAuth();
-    console.log(auth)
-    const { setUser } = auth; // Use the AuthContext
+    const { setUser  } = auth; 
     const navigate = useNavigate();
-
     const navItems = ["Home", "About", "Contact"];
-
     const handleClickShowPassword = () => setShowPassword((show) => !show);
-
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
@@ -39,23 +38,30 @@ const Login = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email, password }), // Sending email and password
+                body: JSON.stringify({ email, password }),
             });
 
-            const data = await res.json(); // Parse the JSON response
-            console.log("API Response:", data); // Log the response for debugging
+            const data = await res.json();
+            console.log("API Response:", data);
 
             if (res.ok) {
-                alert(data.message); // Show success message
-                navigate("/dashboard"); // Redirect to dashboard or another page
+                setToastMessage(data.message); // Set the toast message
+                setToastOpen(true); // Show the toast
+                navigate("/dashboard");
             } else {
                 console.error("Login failed:", data.message || res.statusText);
-                alert(data.message || "Login failed. Please try again.");
+                setToastMessage(data.message || "Login failed. Please try again.");
+                setToastOpen(true); // Show the toast
             }
         } catch (error) {
             console.error("API link not working", error);
         }
     };
+
+    const handleToastClose = () => {
+        setToastOpen(false);
+    };
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -75,7 +81,7 @@ const Login = () => {
     return (
         <>
             <div className="flex flex-col items-center gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
-                <nav className="flex flex-row items-center w-full h-8 justify-between p-8 mb-4">
+                <nav className="flex flex-row items-center w-full h- 8 justify-between p-8 mb-4">
                     <div className="flex flex-row w-1/4 items-center">
                         <img src={Logo} alt="header-logo" className="w-1/3" />
                         <h3 className="text-[black] text-3xl font-semibold">Inventory HUB</h3>
@@ -146,6 +152,7 @@ const Login = () => {
                     <RegistrationModal open={open} onClose={handleRegistrationClose} />
                 </div>
             </div>
+            <Toast open={toastOpen} message={toastMessage} onClose={handleToastClose} /> {/* Add the Toast component here */}
         </>
     );
 };
