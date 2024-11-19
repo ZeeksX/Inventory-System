@@ -3,7 +3,7 @@ import { AuthProvider } from '../components/Auth';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
 import TopNav from '../components/topnav/TopNav';
 
-const Service = ({toggleSidebar, sidebarOpen}) => {
+const Service = ({ toggleSidebar, sidebarOpen }) => {
   // Sample service requests data
   const [serviceRequests, setServiceRequests] = useState([
     { id: 1, customerName: 'John Doe', phoneModel: 'iPhone 13', issue: 'Screen Replacement', date: '2023-10-01' },
@@ -75,26 +75,29 @@ const Service = ({toggleSidebar, sidebarOpen}) => {
 
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4">Recent Service Requests</h2>
-            <table className="min-w-full">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="py-2 px-4 text-left">Customer Name</th>
-                  <th className="py-2 px-4 text-left">Phone Model</th>
-                  <th className="py-2 px-4 text-left">Issue</th>
-                  <th className="py-2 px-4 text-left">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {serviceRequests.map(request => (
-                  <tr key={request.id} className="border-b">
-                    <td className="py-2 px-4">{request.customerName}</td>
-                    <td className="py-2 px-4">{request.phoneModel}</td>
-                    <td className="py-2 px-4">{request.issue}</td>
-                    <td className="py-2 px-4">{request.date}</td>
+            <div className='overflow-scroll'>
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="py-2 px-4 text-left">Customer Name</th>
+                    <th className="py-2 px-4 text-left">Phone Model</th>
+                    <th className="py-2 px-4 text-left">Issue</th>
+                    <th className="py-2 px-4 text-left">Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {serviceRequests.map(request => (
+                    <tr key={request.id} className="border-b">
+                      <td className="py-2 px-4">{request.customerName}</td>
+                      <td className="py-2 px-4">{request.phoneModel}</td>
+                      <td className="py-2 px-4">{request.issue}</td>
+                      <td className="py-2 px-4">{request.date}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
           </div>
         </div>
       </div>
