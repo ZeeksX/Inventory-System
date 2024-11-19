@@ -1,21 +1,25 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../components/Auth"; // Import the AuthContext
 import Logo from "../assets/inventory-logo.svg";
 import PersonIcon from '@mui/icons-material/Person';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { TextField, InputAdornment, FormControl, OutlinedInput, IconButton, Button } from "@mui/material";
 import "../styles/main.css";
-import ForgotPassword from '../components/modals/ForgotPassword'; // Import the ForgotPassword component
-import RegistrationModal from '../components/modals/RegistrationModal'; // Import the RegistrationModal component
+import ForgotPassword from '../components/modals/ForgotPassword';
+import RegistrationModal from '../components/modals/RegistrationModal';
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [open, setOpen] = useState(false); // State for registration modal
+    const [open, setOpen] = useState(false);
     const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
 
+    const auth = useAuth();
+    console.log(auth)
+    const { setUser } = auth; // Use the AuthContext
     const navigate = useNavigate();
 
     const navItems = ["Home", "About", "Contact"];
@@ -35,21 +39,23 @@ const Login = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, password }), // Sending email and password
             });
 
+            const data = await res.json(); // Parse the JSON response
+            console.log("API Response:", data); // Log the response for debugging
+
             if (res.ok) {
-                const data = await res.json();
-                console.log(data);
-                navigate("/dashboard"); 
+                alert(data.message); // Show success message
+                navigate("/dashboard"); // Redirect to dashboard or another page
             } else {
-                console.error("Login failed:", res.statusText);
+                console.error("Login failed:", data.message || res.statusText);
+                alert(data.message || "Login failed. Please try again.");
             }
         } catch (error) {
             console.error("API link not working", error);
         }
     };
-
     const handleClickOpen = () => {
         setOpen(true);
     };

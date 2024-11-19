@@ -26,22 +26,22 @@ export class UserService {
   ): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = this.usersRepository.create({
+    const newUser  = this.usersRepository.create({
       email,
       username,
       password: hashedPassword,
       role,
     });
 
-    return this.usersRepository.save(newUser);
+    return this.usersRepository.save(newUser );
   }
 
-  // Minimal login feature with email and password validation
-  async login(email: string, password: string): Promise<{ message: string }> {
+  // Login feature with email and password validation
+  async login(email: string, password: string): Promise<{ message: string; user: Partial<User>; token: string }> {
     const user = await this.usersRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('User  not found');
     }
 
     const passwordMatches = await bcrypt.compare(password, user.password);
@@ -50,8 +50,20 @@ export class UserService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return { message: 'Login successful' };
+    // Generate a JWT token upon successful login
+    const token = this.jwtService.sign({ 
+      id: user.id, 
+      email: user.email, 
+      role: user.role 
+    });
+
+    return {
+      message: 'Login successful',
+      user: { id: user.id, email: user.email, role: user.role },
+      token,
+    };
   }
+
   // Return all users (admin only)
   async findAll(): Promise<User[]> {
     return this.usersRepository.find();
@@ -62,18 +74,18 @@ export class UserService {
     const user = await this.usersRepository.findOne({ where: { id } });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('User  not found');
     }
 
     return user;
   }
 
   // Delete a user by ID (admin only)
-  async deleteUser(id: number): Promise<void> {
+  async deleteUser (id: number): Promise<void> {
     const result = await this.usersRepository.delete(id);
 
     if (result.affected === 0) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('User  not found');
     }
   }
 }

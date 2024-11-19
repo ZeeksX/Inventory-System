@@ -9,6 +9,7 @@ import Service from "./pages/Service";
 import UserManagement from "./pages/UserManagement";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import { AuthProvider } from './components/Auth';
 
 
 const App = () => {
@@ -19,20 +20,21 @@ const App = () => {
   };
 
   return (
-
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<HomePage sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
-        <Route path="/inventory" element={<Inventory sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
-        <Route path="/management" element={<UserManagement sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
-        <Route path="/sales" element={<Sales sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
-        <Route path="/service" element={<Service sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
-        <Route path="/reports" element={<Reports sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
-        <Route path="/profile" element={<Profile sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
-        <Route path="/settings" element={<Settings sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/dashboard" element={<HomePage sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
+          <Route path="/inventory" element={<Inventory sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
+          <Route path="/management" element={<UserManagement sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
+          <Route path="/sales" element={<Sales sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
+          <Route path="/service" element={<Service sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
+          <Route path="/reports" element={<Reports sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
+          <Route path="/profile" element={<Profile sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
+          <Route path="/settings" element={<Settings sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 
