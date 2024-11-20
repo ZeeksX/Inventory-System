@@ -32,7 +32,7 @@ const HomePage = ({ sidebarOpen, toggleSidebar }) => {
 
             {/* Main content container */}
             {!sidebarOpen && (
-                <div className={`flex-1 w-full ${scrolling ? 'pt-14' : ''} transition-padding duration-300`}>
+                <div className={`flex-1 w-full ${scrolling ? 'pt-14' : ''} transition-padding duration-100`}>
                     <Container />
                 </div>
             )}

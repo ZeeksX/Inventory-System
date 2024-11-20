@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../components/Auth"; 
-import Logo from "../assets/inventory-logo.svg";
+import { useAuth } from "../components/Auth";
+import Brand from "../components/brand/Brand";
 import PersonIcon from '@mui/icons-material/Person';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -21,7 +21,7 @@ const Login = () => {
     const [toastMessage, setToastMessage] = useState(""); // State for toast message
 
     const auth = useAuth();
-    const { setUser  } = auth; 
+    const { setUser } = auth;
     const navigate = useNavigate();
     const navItems = ["Home", "About", "Contact"];
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -80,30 +80,35 @@ const Login = () => {
 
     return (
         <>
-            <div className="flex flex-col items-center gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
-                <nav className="flex flex-row items-center w-full h- 8 justify-between p-8 mb-4">
-                    <div className="flex flex-row w-1/4 items-center">
-                        <img src={Logo} alt="header-logo" className="w-1/3" />
-                        <h3 className="text-[black] text-3xl font-semibold">Inventory HUB</h3>
+            <div className="flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
+                <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb-4">
+                    {/* Brand for large screens */}
+                    <div className="hidden lg:flex flex-row items-center w-full h-8 justify-between">
+                        <Brand />
+                        <div className="flex flex-row gap-8 justify-between">
+                            <ul className="flex flex-row gap-8">
+                                {navItems.map((item) => (
+                                    <li key={item} className="text-[black] hover:text-[darkgrey] text-xl cursor-pointer">{item}</li>
+                                ))}
+                            </ul>
+                            <button onClick={handleClickOpen} className="rounded bg-blue-700 text-xl hover:bg-[green] text-white py-1 px-3 border border-transparent transition-all focus:outline-none focus:ring-2">
+                                Register
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="flex flex-row gap-8 justify-between">
-                        <ul className="flex flex-row gap-8">
-                            {navItems.map((item) => (
-                                <li key={item} className="text-[black] hover:text-[darkgrey] text-xl cursor-pointer">{item}</li>
-                            ))}
-                        </ul>
-                        <button onClick={handleClickOpen} className="rounded bg-blue-700 text-xl hover:bg-[green] text-white py-1 px-3 border border-transparent transition-all focus:outline-none focus:ring-2">
-                            Register
-                        </button>
+                    {/* Brand for small screens */}
+                    <div className="lg:hidden flex justify-center items-center p-2">
+                        <Brand />
                     </div>
                 </nav>
-                <div className="flex flex-col w-1/3 rounded-xl bg-[white] text-black px-3 border gap-4 py-8">
+
+                <div className="flex flex-col max-w-96 lg:max-w-screen-md w-full lg:w-1/3 rounded-xl bg-[white] text-black px-4 lg:px-3 border gap-4 py-8">
                     <div className="flex flex-col justify-center items-center gap-2">
                         <h3 className="text-black font-bold text-2xl">Welcome Back</h3>
-                        <p className="text-black text-xl italic">Sign in to access your inventory</p>
+                        <p className="text-black text-xl text-center italic">Sign in to access your inventory</p>
                     </div>
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-4 items-start justify-center w-3/5 mx-auto">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4 items-start justify-center lg:max-w-96 lg:w-3/5 w-4/5 mx-auto">
                         <TextField
                             fullWidth
                             variant="outlined"
@@ -138,14 +143,14 @@ const Login = () => {
                                 }
                             />
                         </FormControl>
-                        <div className="flex flex-row justify-between items-center w-full">
+                        <div className="flex flex-row justify-between gap-4 lg:gap-0 items-center w-full">
                             <button
                                 className="w-24 h-9 font-semibold rounded bg-blue-600 hover:bg-[green] text-white py-1 px-3 border border-transparent text-base transition-all focus:outline-none focus:ring-2"
                                 type="submit"
                             >
                                 Log in
                             </button>
-                            <h3 onClick={handleForgotPasswordOpen} className="text-blue-900 hover:text-gray-600 cursor-pointer">Forgot Password?</h3>
+                            <h3 onClick={handleForgotPasswordOpen} className="text-blue-900 hover:text-gray-600 text-center cursor-pointer">Forgot Password?</h3>
                         </div>
                     </form>
                     <ForgotPassword open={forgotPasswordOpen} onClose={handleForgotPasswordClose} />

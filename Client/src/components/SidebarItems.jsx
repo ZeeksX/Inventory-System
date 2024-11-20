@@ -37,7 +37,7 @@ const sidebarItems = () => {
                     </li>
                 ))}
             </ul>
-            <div className="log-out fixed bottom-16 ">
+            <div className="log-out sm:fixed bottom-16 ">
                 <ul className='mt-8 w-52'>
                     {profileItems.map((item) => (
                         <li key={item.name} className="flex items-start py-2 px-4 hover:bg-gray-200 rounded-lg">
