@@ -10,6 +10,7 @@ import UserManagement from "./pages/UserManagement";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import { AuthProvider } from './components/Auth';
+import Request from './pages/Request';
 
 
 const App = () => {
@@ -32,6 +33,7 @@ const App = () => {
           <Route path="/reports" element={<Reports sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
           <Route path="/profile" element={<Profile sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
           <Route path="/settings" element={<Settings sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
+          <Route path='/request' element={<Request sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar}/>}/>
         </Routes>
       </Router>
     </AuthProvider>
