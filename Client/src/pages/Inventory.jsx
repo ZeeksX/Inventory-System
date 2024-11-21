@@ -1,27 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
 import { AuthProvider } from '../components/Auth';
 import TopNav from '../components/topnav/TopNav';
 
 const Inventory = ({ sidebarOpen, toggleSidebar }) => {
-    const [inventory, setInventory] = useState([
-        { id: 1, model: 'iPhone 13', price: 799, quantity: 10 },
-        { id: 2, model: 'Samsung Galaxy S21', price: 699, quantity: 5 },
-        { id: 3, model: 'Google Pixel 6', price: 599, quantity: 8 },
-        { id: 4, model: 'OnePlus 9', price: 729, quantity: 3 },
-    ]);
-
+    const [inventory, setInventory] = useState([]);
     const [newPhone, setNewPhone] = useState({ model: '', price: '', quantity: '' });
+
+    useEffect(() => {
+        const fetchInventory = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/products'); // Adjust the API URL if needed
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                const data = await response.json(); // Assuming the API returns an array of products
+                setInventory(data);
+            } catch (error) {
+                console.error("Error fetching inventory:", error);
+            }
+        };
+
+        fetchInventory();
+    }, []);
 
     const handleAddStock = (id) => {
         setInventory(inventory.map(item =>
-            item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+            item.id === id ? { ...item, stock: item.stock + 1 } : item
         ));
     };
 
     const handleRemoveStock = (id) => {
         setInventory(inventory.map(item =>
-            item.id === id && item.quantity > 0 ? { ...item, quantity: item.quantity - 1 } : item
+            item.id === id && item.stock > 0 ? { ...item, stock: item.stock - 1 } : item
         ));
     };
 
@@ -30,17 +41,31 @@ const Inventory = ({ sidebarOpen, toggleSidebar }) => {
         setNewPhone({ ...newPhone, [name]: value });
     };
 
-    const handleAddPhone = (e) => {
+    const handleAddPhone = async (e) => {
         e.preventDefault();
-        const newId = inventory.length ? inventory[inventory.length - 1].id + 1 : 1; // Generate new ID
         const newItem = {
-            id: newId,
-            model: newPhone.model,
+            name: newPhone.model,
             price: parseFloat(newPhone.price),
-            quantity: parseInt(newPhone.quantity),
+            stock: parseInt(newPhone.quantity),
         };
-        setInventory([...inventory, newItem]);
-        setNewPhone({ model: '', price: '', quantity: '' }); // Reset the form
+
+        try {
+            const response = await fetch('http://localhost:3000/api/v1/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newItem),
+            });
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            const addedProduct = await response.json(); // Assuming the API returns the created product
+            setInventory([...inventory, addedProduct]);
+            setNewPhone({ model: '', price: '', quantity: '' }); // Reset the form
+        } catch (error) {
+            console.error("Error adding new product:", error);
+        }
     };
 
     return (
@@ -114,9 +139,9 @@ const Inventory = ({ sidebarOpen, toggleSidebar }) => {
                             <tbody>
                                 {inventory.map(item => (
                                     <tr key={item.id} className="border-b">
-                                        <td className="py-2 px-1 sm:px-4">{item.model}</td>
+                                        <td className="py-2 px-1 sm:px-4">{item.name}</td>
                                         <td className="py-2 px-1 sm:px-4">${item.price}</td>
-                                        <td className="py-2 px-1 sm:px-4">{item.quantity}</td>
+                                        <td className="py-2 px-1 sm:px-4">{item.stock}</td>
                                         <td className="py-2 px-1 sm:px-4">
                                             <div className='flex sm:flex-row flex-col gap-2 '>
                                                 <button
@@ -134,7 +159,6 @@ const Inventory = ({ sidebarOpen, toggleSidebar }) => {
                                                     <span className="inline sm:hidden">Remove</span>
                                                 </button>
                                             </div>
-
                                         </td>
                                     </tr>
                                 ))}

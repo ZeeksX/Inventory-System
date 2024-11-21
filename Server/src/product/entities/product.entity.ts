@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Category } from 'src/category/entities/category.entity';
 import { Supplier } from 'src/supplier/entities/supplier.entity';
 import { OrderItem } from 'src/order-item/entities/order-item.entity';
@@ -17,12 +11,6 @@ export class Product {
 
   @Column()
   name: string;
-
-  // @Column()
-  // sku: string;
-
-  // @Column('text')
-  // description: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;

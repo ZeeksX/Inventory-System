@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AuthProvider } from '../components/Auth';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
 import TopNav from '../components/topnav/TopNav';
 
-const Service = ({ toggleSidebar, sidebarOpen }) => {
-  // Sample service requests data
-  const [serviceRequests, setServiceRequests] = useState([
-    { id: 1, customerName: 'John Doe', phoneModel: 'iPhone 13', issue: 'Screen Replacement', date: '2023-10-01' },
-    { id: 2, customerName: 'Jane Smith', phoneModel: 'Samsung Galaxy S21', issue: 'Battery Replacement', date: '2023-10-02' },
-    { id: 3, customerName: 'Alice Johnson', phoneModel: 'Google Pixel 6', issue: 'Software Issue', date: '2023-10-03' },
-  ]);
 
+const Service = ({ toggleSidebar, sidebarOpen }) => {
+  const [serviceRequests, setServiceRequests] = useState([]);
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    // Fetch service requests and orders from the backend
+    const fetchServiceRequests = async () => {
+      // Replace with your actual API endpoint for service requests
+      const response = await fetch('http://localhost:3000/api/service-requests');
+      const data = await response.json();
+      setServiceRequests(data);
+    };
+
+    const fetchOrders = async () => {
+      const response = await fetch('http://localhost:3000/api/orders');
+      const data = await response.json();
+      setOrders(data);
+    };
+
+    fetchServiceRequests();
+    fetchOrders();
+  }, []);
   const [newRequest, setNewRequest] = useState({
     customerName: '',
     phoneModel: '',
@@ -37,7 +52,6 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
         <TopNav sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
         <div className="ml-0 sm:ml-64 w-full bg-[#f4f4f4] p-8">
           <h1 className="text-3xl font-bold mb-6">Service Requests</h1>
-
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-xl font-semibold mb-4">Submit a New Service Request</h2>
             <form onSubmit={handleSubmit} className="flex flex-col">
@@ -72,8 +86,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
               </button>
             </form>
           </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-xl font-semibold mb-4">Recent Service Requests</h2>
             <div className='overflow-scroll sm:overflow-hidden'>
               <table className="min-w-full">
@@ -97,7 +110,34 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
                 </tbody>
               </table>
             </div>
+          </div>
 
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-4">Recent Orders</h2>
+            <div className='overflow-scroll sm:overflow-hidden'>
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="py-2 px-4 text-left">Customer Name</th>
+                    <th className="py-2 px-4 text-left">Item</th>
+                    <th className="py-2 px-4 text-left">Total Price</th>
+                    <th className="py-2 px-4 text-left">Order Date</th>
+                    <th className="py-2 px-4 text-left">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map(order => (
+                    <tr key={order.id} className="border-b">
+                      <td className="py-2 px-4">{order.customerName}</td>
+                      <td className="py-2 px-4">{order.item}</td>
+                      <td className="py-2 px-4">${order.totalPrice.toFixed(2)}</td>
+                      <td className="py-2 px-4">{order.orderDate}</td>
+                      <td className="py-2 px-4">{order.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

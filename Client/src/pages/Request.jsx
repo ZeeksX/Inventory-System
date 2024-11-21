@@ -34,32 +34,32 @@ const Request = ({sidebarOpen, toggleSidebar}) => {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-
-    // Create a data object to send to the API
+    event.preventDefault();
+  
     const data = {
-      username,
-      email,
-      phoneNumber: newRequest.customerTel,
-      purchase: item,
+      customerName: username,
+      customerEmail: email,
+      customerTel: newRequest.customerTel,
+      item: item,
+      totalPrice: 200.00, // Replace with actual price
     };
-
+  
     try {
-      const response = await fetch('http://localhost:3000/api/v1/users/register', {
+      const response = await fetch('http://localhost:3000/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
-
+  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-
+  
       const result = await response.json();
       console.log('Success:', result);
-      setModalOpen(false); // Close the modal after submission
+      setModalOpen(false);
     } catch (error) {
       console.error('Error:', error);
     }
