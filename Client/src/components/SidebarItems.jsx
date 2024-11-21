@@ -28,7 +28,7 @@ const SidebarItems = ({ toggleSidebar }) => { // Accept toggleSidebar as a prop
 
     return (
         <>
-            <ul className='mt-8 w-52'>
+            <ul className='mt-8 md:mt-2 w-52'>
                 {navItems.map((item) => (
                     <li key={item.name} className="flex items-center py-2 px-4 hover:bg-gray-200 rounded-lg">
                         <Link to={item.link} className="flex items-center w-full" onClick={toggleSidebar}> {/* Call toggleSidebar on click */}
@@ -38,7 +38,7 @@ const SidebarItems = ({ toggleSidebar }) => { // Accept toggleSidebar as a prop
                     </li>
                 ))}
             </ul>
-            <div className="log-out sm:fixed bottom-16 ">
+            <div className="log-out sm:fixed bottom-16 md:bottom-12 ">
                 <ul className='mt-8 w-52'>
                     {profileItems.map((item) => (
                         <li key={item.name} className="flex items-start py-2 px-4 hover:bg-gray-200 rounded-lg">
