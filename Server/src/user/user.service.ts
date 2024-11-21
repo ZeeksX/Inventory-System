@@ -15,7 +15,7 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   // Register a new user
   async register(
@@ -26,14 +26,14 @@ export class UserService {
   ): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser  = this.usersRepository.create({
+    const newUser = this.usersRepository.create({
       email,
       username,
       password: hashedPassword,
       role,
     });
 
-    return this.usersRepository.save(newUser );
+    return this.usersRepository.save(newUser);
   }
 
   // Login feature with email and password validation
@@ -51,10 +51,10 @@ export class UserService {
     }
 
     // Generate a JWT token upon successful login
-    const token = this.jwtService.sign({ 
-      id: user.id, 
-      email: user.email, 
-      role: user.role 
+    const token = this.jwtService.sign({
+      id: user.id,
+      email: user.email,
+      role: user.role
     });
 
     return {
@@ -81,7 +81,7 @@ export class UserService {
   }
 
   // Delete a user by ID (admin only)
-  async deleteUser (id: number): Promise<void> {
+  async deleteUser(id: number): Promise<void> {
     const result = await this.usersRepository.delete(id);
 
     if (result.affected === 0) {

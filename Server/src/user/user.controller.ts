@@ -25,13 +25,14 @@ export class UserController {
   ) {
     try {
       const response = await this.userService.login(email, password);
-      console.log('Login Response:', response); // Log the response to the console
+      console.log('Login Response:', response); // Log the entire response to the console
+      console.log('User  Role:', response.user.role); // Log the user's role
       return response; // Return the response to the client
     } catch (error) {
       console.error('Login Error:', error); // Log the error for debugging
       throw new HttpException({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Internal server error',
+        message: 'Invalid Credentials',
       }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -50,7 +51,7 @@ export class UserController {
 
   // Delete a user (admin only)
   @Delete(':id')
-  async deleteUser (@Param('id') id: number) {
-    return this.userService.deleteUser (id);
+  async deleteUser(@Param('id') id: number) {
+    return this.userService.deleteUser(id);
   }
 }

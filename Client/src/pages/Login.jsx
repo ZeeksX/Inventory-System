@@ -45,6 +45,9 @@ const Login = () => {
             console.log("API Response:", data);
 
             if (res.ok) {
+                // Set the user in the Auth context
+                setUser({ id: data.user.id, email: data.user.email, role: data.user.role });
+
                 setToastMessage(data.message); // Set the toast message
                 setToastOpen(true); // Show the toast
                 navigate("/dashboard");
