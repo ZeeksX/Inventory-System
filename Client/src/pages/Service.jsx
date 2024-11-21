@@ -3,45 +3,71 @@ import { AuthProvider } from '../components/Auth';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
 import TopNav from '../components/topnav/TopNav';
 
-
 const Service = ({ toggleSidebar, sidebarOpen }) => {
   const [serviceRequests, setServiceRequests] = useState([]);
   const [orders, setOrders] = useState([]);
-
-  useEffect(() => {
-    // Fetch service requests and orders from the backend
-    const fetchServiceRequests = async () => {
-      // Replace with your actual API endpoint for service requests
-      const response = await fetch('http://localhost:3000/api/service-requests');
-      const data = await response.json();
-      setServiceRequests(data);
-    };
-
-    const fetchOrders = async () => {
-      const response = await fetch('http://localhost:3000/api/orders');
-      const data = await response.json();
-      setOrders(data);
-    };
-
-    fetchServiceRequests();
-    fetchOrders();
-  }, []);
   const [newRequest, setNewRequest] = useState({
     customerName: '',
     phoneModel: '',
     issue: '',
   });
 
+  useEffect(() => {
+    // Fetch service requests and orders from the backend
+    const fetchServiceRequests = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/services');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setServiceRequests(data);
+      } catch (error) {
+        console.error('Error fetching service requests:', error);
+      }
+    };
+
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/orders');
+        const data = await response.json();
+        setOrders(data);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
+
+    fetchServiceRequests();
+    fetchOrders();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewRequest({ ...newRequest, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (newRequest.customerName && newRequest.phoneModel && newRequest.issue) {
-      setServiceRequests([...serviceRequests, { id: serviceRequests.length + 1, ...newRequest, date: new Date().toISOString().split('T')[0] }]);
-      setNewRequest({ customerName: '', phoneModel: '', issue: '' }); // Reset form
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/services', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newRequest),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        setServiceRequests([...serviceRequests, result]); // Add the new service request to the local state
+        setNewRequest({ customerName: '', phoneModel: '', issue: '' }); // Reset form
+      } catch (error) {
+        console.error('Error submitting service request:', error);
+      }
     }
   };
 
@@ -86,6 +112,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
               </button>
             </form>
           </div>
+
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-xl font-semibold mb-4">Recent Service Requests</h2>
             <div className='overflow-scroll sm:overflow-hidden'>
@@ -104,7 +131,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
                       <td className="py-2 px-4">{request.customerName}</td>
                       <td className="py-2 px-4">{request.phoneModel}</td>
                       <td className="py-2 px-4">{request.issue}</td>
-                      <td className="py-2 px-4">{request.date}</td>
+                      <td className="py-2 px-4">{request.serviceDate}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -141,7 +168,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
           </div>
         </div>
       </div>
-    </AuthProvider>
+    </AuthProvider >
   );
 };
 

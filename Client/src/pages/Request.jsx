@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import RequestService from "../components/modals/RequestService";
 import PurchaseProduct from "../components/modals/PurchaseProduct"; // Make sure to import this
 
-const Request = ({sidebarOpen, toggleSidebar}) => {
+const Request = ({ sidebarOpen, toggleSidebar }) => {
   const [item, setItem] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -35,7 +35,7 @@ const Request = ({sidebarOpen, toggleSidebar}) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     const data = {
       customerName: username,
       customerEmail: email,
@@ -43,20 +43,20 @@ const Request = ({sidebarOpen, toggleSidebar}) => {
       item: item,
       totalPrice: 200.00, // Replace with actual price
     };
-  
+
     try {
-      const response = await fetch('http://localhost:3000/api/orders', {
+      const response = await fetch('http://localhost:3000/api/v1/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
-  
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-  
+
       const result = await response.json();
       console.log('Success:', result);
       setModalOpen(false);
@@ -65,15 +65,40 @@ const Request = ({sidebarOpen, toggleSidebar}) => {
     }
   };
 
-  const handleSubmitService = (e) => {
+  // Request.jsx
+  const handleSubmitService = async (e) => {
     e.preventDefault();
-    if (newRequest.customerName && newRequest.customerEmail && newRequest.customerTel && newRequest.phoneModel && newRequest.issue) {
-      setServiceRequests([...serviceRequests, { id: serviceRequests.length + 1, ...newRequest, date: new Date().toISOString().split('T')[0] }]);
-      setNewRequest({ customerName: '', customerEmail: '', customerTel: '', phoneModel: '', issue: '' }); // Reset form
-      setModalOpen(false); // Close the modal after submission
+    if (
+      newRequest.customerName &&
+      newRequest.customerEmail &&
+      newRequest.customerTel &&
+      newRequest.phoneModel &&
+      newRequest.issue
+    ) {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/services', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newRequest),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok'); // Fixed missing quote
+        }
+
+        const result = await response.json();
+        setServiceRequests([...serviceRequests, result]); // Add the new service request to the local state
+        setNewRequest({ customerName: '', customerEmail: '', customerTel: '', phoneModel: '', issue: '' }); // Reset form
+        setModalOpen(false); // Close the modal after submission
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    } else {
+      console.error('All fields are required'); // Optional: Log if any field is missing
     }
   };
-
   const openModal = (type) => {
     setFormType(type);
     setModalOpen(true);
