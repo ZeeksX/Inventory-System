@@ -9,11 +9,11 @@ import { CustomerModule } from './customer/customer.module';
 import { UserModule } from './user/user.module';
 import { DatabaseModule } from 'database/database.module';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true }), // Load environment variables
     DatabaseModule,
     ProductModule,
     StockLogModule,
@@ -23,7 +23,10 @@ import { AuthModule } from './auth/auth.module';
     OrderItemModule,
     CustomerModule,
     UserModule,
-    AuthModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET, // Use the secret from the environment variable
+      signOptions: { expiresIn: '60s' }, // Set token expiration time as needed
+    }),
   ],
   controllers: [],
   providers: [],

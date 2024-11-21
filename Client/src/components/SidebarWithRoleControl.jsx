@@ -11,12 +11,10 @@ const SidebarWithRoleControl = () => {
         switch(user.role) {
             case 'Admin':
                 return <DefaultSidebar />;
-            case 'Sales Staff':
+            case 'staff':
                 return <SalesSidebar />;
             case 'Manager':
                 return <ManagerSidebar />;
-            default:
-                return <DefaultSidebar />;
         }
     };
 

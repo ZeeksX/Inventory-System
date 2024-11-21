@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import Sidebar from '../components/Sidebar';
+import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
+import TopNav from '../components/topnav/TopNav';
+import { AuthProvider } from '../components/Auth';
 import { PDFDownloadLink, Document, Page, Text, View } from '@react-pdf/renderer';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const Reports = ({toggleSidebar, sidebarOpen}) => {
+const Reports = ({ toggleSidebar, sidebarOpen }) => {
   // Sample data for sales, orders, and services
   const [sales, setSales] = useState([
     { id: 1, model: 'iPhone 13', price: 799, quantity: 1, date: '2023-10-01' },
@@ -29,7 +31,9 @@ const Reports = ({toggleSidebar, sidebarOpen}) => {
   const filterData = (data) => {
     return data.filter(item => {
       const itemDate = new Date(item.date);
-      return (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
+      const isAfterStart = !startDate || itemDate >= startDate;
+      const isBeforeEnd = !endDate || itemDate <= endDate;
+      return isAfterStart && isBeforeEnd;
     });
   };
 
@@ -83,138 +87,141 @@ const Reports = ({toggleSidebar, sidebarOpen}) => {
   );
 
   return (
-    <div className="home-page flex flex-row w-full min-h-screen">
-      <Sidebar />
-      <div className="ml-64 w-full bg-[#f4f4f4] p-8">
-        <h1 className="text-3xl font-bold mb-6">Reports</h1>
+    <AuthProvider>
+      <div className="home-page flex flex-col sm:flex-row w-full min-h-screen">
+        <SidebarWithRoleControl />
+        <TopNav sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+        <div className="sm:ml-64 w-full bg-[#f4f4f4] p-8 ml-0">
+          <h1 className="text-3xl font-bold mb-6">Reports</h1>
 
-        <div className="mb-6 w-1/2 flex flex-row justify-between">
-          <div>
-            <label className="mr-4">Start Date:</label>
-            <DatePicker
-              selected={startDate}
-              onChange={date => setStartDate(date)}
-              dateFormat="yyyy-MM-dd"
-              className="border border-gray-300 rounded p-2"
-            />
+          <div className="mb-6 flex flex-col w-full gap-2 sm:w-1/2 sm:flex-row justify-between">
+            <div className='flex flex-row gap-4 items-center'>
+              <label className='w-20'>Start Date:</label>
+              <DatePicker
+                selected={startDate}
+                onChange={date => setStartDate(date)}
+                dateFormat="yyyy-MM-dd"
+                className="border border-gray-300 rounded p-2"
+              />
+            </div>
+            <div className='flex flex-row items-center gap-4'>
+              <label className="ml-0 sm:ml-4 w-20">End Date:</label>
+              <DatePicker
+                selected={endDate}
+                onChange={date => setEndDate(date)}
+                dateFormat="yyyy-MM-dd"
+                className="border border-gray-300 rounded p-2"
+              />
+            </div>
           </div>
-          <div>
-            <label className="mr-4 ml-4">End Date:</label>
-            <DatePicker
-              selected={endDate}
-              onChange={date => setEndDate(date)}
-              dateFormat="yyyy-MM-dd"
-              className="border border-gray-300 rounded p-2"
-            />
+
+          <div className="flex mb-6">
+            <button onClick={() => setActiveTab('sales')} className={`mr-4 ${activeTab === 'sales' ? 'font-bold' : ''}`} aria-label="Sales Report">
+              Sales Report
+            </button>
+            <button onClick={() => setActiveTab('orders')} className={`mr-4 ${activeTab === 'orders' ? 'font-bold' : ''}`} aria-label="Orders Report">
+              Orders Report
+            </button>
+            <button onClick={() => setActiveTab('services')} className={`mr-4 ${activeTab === 'services' ? 'font-bold' : ''}`} aria-label="Service Report">
+              Service Report
+            </button>
           </div>
+
+          {activeTab === 'sales' && (
+            <>
+              <PDFDownloadLink document={<SalesDocument />} fileName="sales_report.pdf">
+                {({ loading }) => (loading ? 'Loading document...' : 'Download Sales Report')}
+              </PDFDownloadLink>
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-4">Filtered Sales Data</h2>
+                <table className="min-w-full bg-white border border-gray-300">
+                  <thead>
+                    <tr className="bg-gray-200">
+                      <th className="py-2 px-4 text-left">Model</th>
+                      <th className="py-2 px-4 text-left">Price</th>
+                      <th className="py-2 px-4 text-left">Quantity</th>
+                      <th className="py-2 px-4 text-left">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filterData(sales).map(sale => (
+                      <tr key={sale.id} className="border-b">
+                        <td className="py-2 px-4">{sale.model}</td>
+                        <td className="py-2 px-4">${sale.price}</td>
+                        <td className="py-2 px-4">{sale.quantity}</td>
+                        <td className="py-2 px-4">{sale.date}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          {activeTab === 'orders' && (
+            <>
+              <PDFDownloadLink document={<OrdersDocument />} fileName="orders_report.pdf">
+                {({ loading }) => (loading ? 'Loading document...' : 'Download Orders Report')}
+              </PDFDownloadLink>
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-4">Filtered Orders Data</h2>
+                <table className="min-w-full bg-white border border-gray-300">
+                  <thead>
+                    <tr className="bg-gray-200">
+                      <th className="py-2 px-4 text-left">Order ID</th>
+                      <th className="py-2 px-4 text-left">Customer</th>
+                      <th className="py-2 px-4 text-left">Total</th>
+                      <th className="py-2 px-4 text-left">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filterData(orders).map(order => (
+                      <tr key={order.id} className="border-b">
+                        <td className="py-2 px-4">{order.orderId}</td>
+                        <td className="py-2 px-4">{order.customer}</td>
+                        <td className="py-2 px-4">${order.total}</td>
+                        <td className="py-2 px-4">{order.date}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          {activeTab === 'services' && (
+            <>
+              <PDFDownloadLink document={<ServicesDocument />} fileName="services_report.pdf">
+                {({ loading }) => (loading ? 'Loading document...' : 'Download Service Report')}
+              </PDFDownloadLink>
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-4">Filtered Service Data </h2>
+                <table className="min-w-full bg-white border border-gray-300">
+                  <thead>
+                    <tr className="bg-gray-200">
+                      <th className="py-2 px-4 text-left">Service ID</th>
+                      <th className="py-2 px-4 text-left">Customer</th>
+                      <th className="py-2 px-4 text-left">Service</th>
+                      <th className="py-2 px-4 text-left">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filterData(services).map(service => (
+                      <tr key={service.id} className="border-b">
+                        <td className="py-2 px-4">{service.serviceId}</td>
+                        <td className="py-2 px-4">{service.customer}</td>
+                        <td className="py-2 px-4">{service.service}</td>
+                        <td className="py-2 px-4">{service.date}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </div>
-
-        <div className="flex mb-6">
-          <button onClick={() => setActiveTab('sales')} className={`mr-4 ${activeTab === 'sales' ? 'font-bold' : ''}`}>
-            Sales Report
-          </button>
-          <button onClick={() => setActiveTab('orders')} className={`mr-4 ${activeTab === 'orders' ? 'font-bold' : ''}`}>
-            Orders Report
-          </button>
-          <button onClick={() => setActiveTab('services')} className={`mr-4 ${activeTab === 'services' ? 'font-bold' : ''}`}>
-            Service Report
-          </button>
-        </div>
-
-        {activeTab === 'sales' && (
-          <>
-            <PDFDownloadLink document={<SalesDocument />} fileName="sales_report.pdf">
-              {({ loading }) => (loading ? 'Loading document...' : 'Download Sales Report')}
-            </PDFDownloadLink>
-            <div className="mt-6">
-              <h2 className="text-xl font-semibold mb-4">Filtered Sales Data</h2>
-              <table className="min-w-full bg-white border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="py-2 px-4 text-left">Model</th>
-                    <th className="py-2 px-4 text-left">Price</th>
-                    <th className="py-2 px-4 text-left">Quantity</th>
-                    <th className="py-2 px-4 text-left">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filterData(sales).map(sale => (
-                    <tr key={sale.id} className="border-b">
-                      <td className="py-2 px-4">{sale.model}</td>
-                      <td className="py-2 px-4">${sale.price}</td>
-                      <td className="py-2 px-4">{sale.quantity}</td>
-                      <td className="py-2 px-4">{sale.date}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-
-        {activeTab === 'orders' && (
-          <>
-            <PDFDownloadLink document={<OrdersDocument />} fileName="orders_report.pdf">
-              {({ loading }) => (loading ? 'Loading document...' : 'Download Orders Report')}
-            </PDFDownloadLink>
-            <div className="mt-6">
-              <h2 className="text-xl font-semibold mb-4">Filtered Orders Data</h2>
-              <table className="min-w-full bg-white border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="py-2 px-4 text-left">Order ID</th>
-                    <th className="py-2 px-4 text-left">Customer</th>
-                    <th className="py-2 px-4 text-left">Total</th>
-                    <th className="py-2 px-4 text-left">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filterData(orders).map(order => (
-                    <tr key={order.id} className="border-b">
-                      <td className="py-2 px-4">{order.orderId}</td>
-                      <td className="py-2 px-4">{order.customer}</td>
-                      <td className="py-2 px-4">${order.total}</td>
-                      <td className="py-2 px-4">{order.date}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-
-        {activeTab === 'services' && (
-          <>
-            <PDFDownloadLink document={<ServicesDocument />} fileName="services_report.pdf">
-              {({ loading }) => (loading ? 'Loading document...' : 'Download Service Report')}
-            </PDFDownloadLink>
-            <div className="mt-6">
-              <h2 className="text-xl font-semibold mb-4">Filtered Service Data </h2>
-              <table className="min-w-full bg-white border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="py-2 px-4 text-left">Service ID</th>
-                    <th className="py-2 px-4 text-left">Customer</th>
-                    <th className="py-2 px-4 text-left">Service</th>
-                    <th className="py-2 px-4 text-left">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filterData(services).map(service => (
-                    <tr key={service.id} className="border-b">
-                      <td className="py-2 px-4">{service.serviceId}</td>
-                      <td className="py-2 px-4">{service.customer}</td>
-                      <td className="py-2 px-4">{service.service}</td>
-                      <td className="py-2 px-4">{service.date}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
       </div>
-    </div>
+    </AuthProvider>
   );
 };
 

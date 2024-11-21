@@ -28,24 +28,27 @@ const Sales = ({ sidebarOpen, toggleSidebar }) => {
             <h2 className="text-xl font-semibold mb-4">Total Quantity Sold: {totalQuantity}</h2>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4">Recent Sales</h2>
             <table className="min-w-full">
               <thead>
                 <tr className="bg-gray-200">
-                  <th className="py-2 px-4 text-left">Model</th>
-                  <th className="py-2 px-4 text-left">Price</th>
-                  <th className="py-2 px-4 text-left">Quantity</th>
-                  <th className="py-2 px-4 text-left">Date</th>
+                  <th className="py-2 px-2 sm:px-4 text-left">Model</th>
+                  <th className="py-2 px-2 sm:px-4 text-left">Price</th>
+                  <th className="py-2 px-2 sm:px-4 text-left">
+                    <span className="hidden sm:inline">Quantity</span>
+                    <span className="inline sm:hidden">Qty</span>
+                  </th>
+                  <th className="py-2 px-2 sm:px-4 text-left">Date</th>
                 </tr>
               </thead>
               <tbody>
                 {sales.map(sale => (
                   <tr key={sale.id} className="border-b">
-                    <td className="py-2 px-4">{sale.model}</td>
-                    <td className="py-2 px-4">${sale.price}</td>
-                    <td className="py-2 px-4">{sale.quantity}</td>
-                    <td className="py-2 px-4">{sale.date}</td>
+                    <td className="py-2 px-2 sm:px-4">{sale.model}</td>
+                    <td className="py-2 px-2 sm:px-4">${sale.price}</td>
+                    <td className="py-2 px-2 sm:px-4">{sale.quantity}</td>
+                    <td className="py-2 px-2 sm:px-4">{sale.date}</td>
                   </tr>
                 ))}
               </tbody>
