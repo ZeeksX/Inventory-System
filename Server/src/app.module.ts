@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { DatabaseModule } from 'database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { RequestModule } from './request/request.module';
 
 
 @Module({
@@ -23,6 +24,7 @@ import { JwtModule } from '@nestjs/jwt';
     OrderModule,
     OrderItemModule,
     CustomerModule,
+    RequestModule,
     UserModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET, // Use the secret from the environment variable

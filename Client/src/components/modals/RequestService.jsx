@@ -24,12 +24,11 @@ const RequestService = ({ newRequest, handleInputChange, handleSubmitService, cl
             />
             <input
                 type='tel'
-                name="customerTel"
+                name="phoneNumber"
                 placeholder="Phone Number"
-                value={newRequest.customerTel}
+                value={newRequest.phoneNumber}
                 onChange={handleInputChange}
-                className="mb-4 p-2 border ```javascript
-                border-gray-300 rounded"
+                className="mb-4 p-2 border border-gray-300 rounded"
                 required
             />
             <input
@@ -42,9 +41,9 @@ const RequestService = ({ newRequest, handleInputChange, handleSubmitService, cl
                 required
             />
             <textarea
-                name="issue"
+                name="issueDescription"
                 placeholder="Issue Description"
-                value={newRequest.issue}
+                value={newRequest.issueDescription}
                 onChange={handleInputChange}
                 className="mb-4 p-2 border border-gray-300 rounded"
                 required

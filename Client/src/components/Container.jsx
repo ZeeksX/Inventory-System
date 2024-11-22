@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 // import { Line } from 'react-chartjs-2'; // Uncomment this line when you want to use the chart
 
+
 const Container = () => {
+  
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
 
@@ -69,7 +71,7 @@ const Container = () => {
   return (
     <div className="w-auto bg-[#f4f4f4] p-8 sm:ml-0 min-h-screen">
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-
+      {/* Display welcome message with user's name */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         {/* Card 1: Total Sales */}
         <div className="bg-white p-6 rounded-lg shadow-md">
@@ -98,7 +100,7 @@ const Container = () => {
 
       {/* Recent Activity Section */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text -xl font-semibold mb-4">Recent Activity</h2>
+        <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
         <ul>
           <li className="border-b py-2">User  John Doe made a purchase of $100.</li>
           <li className="border-b py-2">User  Jane Smith registered.</li>
