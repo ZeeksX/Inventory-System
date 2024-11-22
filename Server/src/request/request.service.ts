@@ -8,16 +8,29 @@ import { ServiceRequest } from './entities/service-request.entity';
 export class RequestService {
   constructor(
     @InjectRepository(Purchase)
-    private purchaseRepository: Repository<Purchase>,
+    private readonly purchaseRepository: Repository<Purchase>,
+
     @InjectRepository(ServiceRequest)
-    private serviceRequestRepository: Repository<ServiceRequest>,
+    private readonly serviceRequestRepository: Repository<ServiceRequest>,
   ) {}
 
+  // Create a new purchase
   async createPurchase(purchaseData: Partial<Purchase>) {
-    return this.purchaseRepository.save(purchaseData);
+    try {
+      const purchase = this.purchaseRepository.create(purchaseData);
+      return await this.purchaseRepository.save(purchase);
+    } catch (error) {
+      throw new Error(`Error creating purchase: ${error.message}`);
+    }
   }
 
+  // Create a new service request
   async createServiceRequest(serviceData: Partial<ServiceRequest>) {
-    return this.serviceRequestRepository.save(serviceData);
+    try {
+      const serviceRequest = this.serviceRequestRepository.create(serviceData);
+      return await this.serviceRequestRepository.save(serviceRequest);
+    } catch (error) {
+      throw new Error(`Error creating service request: ${error.message}`);
+    }
   }
 }

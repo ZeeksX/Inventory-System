@@ -8,7 +8,6 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { TextField, InputAdornment, FormControl, OutlinedInput, IconButton } from "@mui/material";
 import "../styles/main.css";
 import ForgotPassword from '../components/modals/ForgotPassword';
-
 import Toast from '../components/modals/Toast'; // Import the Toast component
 
 const Login = () => {
@@ -57,7 +56,6 @@ const Login = () => {
             }
         } catch (error) {
             console.error("Error during login:", error.message);
-            alert("Invalid email or password. Please try again.");
         }
     };
 

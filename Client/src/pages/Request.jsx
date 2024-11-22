@@ -2,59 +2,64 @@ import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
-import Brand from "../components/brand/Brand"
+import Brand from "../components/brand/Brand";
 import RequestService from "../components/modals/RequestService";
 import RegistrationModal from '../components/modals/RegistrationModal';
-import PurchaseProduct from "../components/modals/PurchaseProduct"; // Make sure to import this
+import PurchaseProduct from "../components/modals/PurchaseProduct";
 
 const Request = ({ sidebarOpen, toggleSidebar }) => {
   const [item, setItem] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [open, setOpen] = useState(false);
-  const [serviceRequests, setServiceRequests] = useState([
-    { id: 1, customerName: 'John Doe', phoneModel: 'iPhone 13', issue: 'Screen Replacement', date: '2023-10-01' },
-    { id: 2, customerName: 'Jane Smith', phoneModel: 'Samsung Galaxy S21', issue: 'Battery Replacement', date: '2023-10-02' },
-    { id: 3, customerName: 'Alice Johnson', phoneModel: 'Google Pixel 6', issue: 'Software Issue', date: '2023-10-03' },
-  ]);
   const [newRequest, setNewRequest] = useState({
     customerName: '',
     customerEmail: '',
-    customerTel: '',
+    phoneNumber: '',
     phoneModel: '',
-    issue: '',
+    issueDescription: '',
   });
   const [modalOpen, setModalOpen] = useState(false);
-  const [formType, setFormType] = useState(''); // 'purchase' or 'service'
-  const navItems = ["Home", "About", "Contact"];
+  const [formType, setFormType] = useState('');
+  const [isRegistered, setIsRegistered] = useState(false); // New state for registration
+
   const handleChange = (event) => {
     setItem(event.target.value);
   };
+
+  const navItems = ["Home", "About", "Contact"];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewRequest({ ...newRequest, [name]: value });
   };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
+
   const handleRegistrationClose = () => {
     setOpen(false);
+    setIsRegistered(true);
   };
+
+  const handleRegistrationSuccess = () => {
+    setIsRegistered(true); // Update registration state on success
+    setOpen(false); // Close registration modal
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const data = {
       customerName: username,
       customerEmail: email,
-      customerTel: newRequest.customerTel,
+      phoneNumber: newRequest.phoneNumber,
       item: item,
-      totalPrice: 200.00, // Replace with actual price
+      totalPrice: 200.00,
     };
 
     try {
       const response = await fetch('http://localhost:3000/api/v1/request/purchase', {
-
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,18 +79,17 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
     }
   };
 
-  // Request.jsx
   const handleSubmitService = async (e) => {
     e.preventDefault();
     if (
       newRequest.customerName &&
       newRequest.customerEmail &&
-      newRequest.customerTel &&
+      newRequest.phoneNumber &&
       newRequest.phoneModel &&
-      newRequest.issue
+      newRequest.issueDescription
     ) {
       try {
-        const response = await fetch('http://localhost:3000/api/v1/services', {
+        const response = await fetch('http://localhost:3000/api/v1/request/service', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -94,20 +98,20 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
         });
 
         if (!response.ok) {
-          throw new Error('Network response was not ok'); // Fixed missing quote
+          throw new Error('Network response was not ok');
         }
 
         const result = await response.json();
-        setServiceRequests([...serviceRequests, result]); // Add the new service request to the local state
-        setNewRequest({ customerName: '', customerEmail: '', customerTel: '', phoneModel: '', issue: '' }); // Reset form
-        setModalOpen(false); // Close the modal after submission
+        console.log('Service Request Success:', result);
+        closeModal();
       } catch (error) {
         console.error('Error:', error);
       }
     } else {
-      console.error('All fields are required'); // Optional: Log if any field is missing
+      console.error('All fields are required');
     }
   };
+
   const openModal = (type) => {
     setFormType(type);
     setModalOpen(true);
@@ -115,14 +119,13 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
 
   const closeModal = () => {
     setModalOpen(false);
-    setNewRequest({ customerName: '', customerEmail: '', customerTel: '', phoneModel: '', issue: '' }); // Reset service request form
+    setNewRequest({ customerName: '', customerEmail: '', phoneNumber: '', phoneModel: '', issueDescription: '' });
   };
 
   return (
     <>
-      <div className=" flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
+      <div className="flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
         <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb-4">
-          {/* Brand for large screens */}
           <div className="hidden lg:flex flex-row items-center w-full h-8 justify-between">
             <Brand />
             <div className="flex flex-row gap-8 justify-between">
@@ -137,7 +140,6 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
             </div>
           </div>
 
-          {/* Brand for small screens */}
           <div className="lg:hidden flex justify-center items-center p-2">
             <Brand />
           </div>
@@ -145,22 +147,26 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
 
         <div className="flex flex-col items-center w-full">
           <h2 className="text-xl font-semibold mb-4">Choose an Option</h2>
-          <div className=" flex gap-4">
-            <Button
-              variant="contained"
-              sx={{ '&:hover': { backgroundColor: 'green' } }}
-              onClick={() => openModal('purchase')}
-            >
-              Purchase an Item
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ '&:hover': { backgroundColor: 'green' } }}
-              onClick={() => openModal('service')}
-            >
-              Submit a Service Request
-            </Button>
-          </div>
+          {isRegistered ? ( // Conditionally render based on registration state
+            <div className="flex gap-4">
+              <Button
+                variant="contained"
+                sx={{ '&:hover': { backgroundColor: 'green' } }}
+                onClick={() => openModal('purchase')}
+              >
+                Purchase an Item
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ '&:hover': { backgroundColor: 'green' } }}
+                onClick={() => openModal('service')}
+              >
+                Submit a Service Request
+              </Button>
+            </div>
+          ) : (
+            <p className="text-lg">Please register to access purchase and service options.</p>
+          )}
         </div>
         <Modal open={modalOpen} onClose={closeModal}>
           <Box sx={{
@@ -194,7 +200,7 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
             )}
           </Box>
         </Modal>
-        <RegistrationModal open={open} onClose={handleRegistrationClose} />
+        <RegistrationModal open={open} onClose={handleRegistrationClose} onSuccess={handleRegistrationSuccess} />
       </div>
     </>
   );
