@@ -15,7 +15,6 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [open, setOpen] = useState(false);
     const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
     const [toastOpen, setToastOpen] = useState(false); // State for toast visibility
     const [toastMessage, setToastMessage] = useState(""); // State for toast message
@@ -23,33 +22,9 @@ const Login = () => {
     const auth = useAuth();
     const { setUser } = auth;
     const navigate = useNavigate();
-    const navItems = ["Home", "About", "Contact"];
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
-    };
-
-    // Reuse the login function
-    const login = async (email, password) => {
-        const response = await fetch("http://localhost:3000/api/v1/users/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-        });
-
-        if (!response.ok) {
-            // Handle error response
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
-
-        const data = await response.json();
-        if (data.accessToken) {
-            localStorage.setItem("token", data.accessToken); // Store token in localStorage
-            return data;
-        } else {
-            throw new Error("Login failed");
-        }
     };
 
     const handleSubmit = async (e) => {
@@ -66,6 +41,7 @@ const Login = () => {
 
             const data = await res.json();
             console.log("API Response:", data);
+            console.log("User email: ", data.user)
 
             if (res.ok) {
                 // Set the user in the Auth context
@@ -89,8 +65,6 @@ const Login = () => {
         setToastOpen(false);
     };
 
-   
-
     const handleForgotPasswordOpen = () => {
         setForgotPasswordOpen(true);
     };
@@ -99,16 +73,15 @@ const Login = () => {
         setForgotPasswordOpen(false);
     };
 
-    
+
 
     return (
         <>
-            <div className=" flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
-                <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb-4">
+            <div className=" flex flex-col items-center lg:justify-center justify-center gap-2 lg:gap-0 p-4 w-full min-h-screen bg-[#f4f4f4]">
+                <nav className="flex flex-col w-full items-center justify-center p-2 lg:p-8 mb-0 lg:mb-4">
                     {/* Brand for large screens */}
-                    <div className="hidden lg:flex flex-row items-center w-full h-8 justify-between">
+                    <div className="hidden lg:flex flex-row items-center w-full h-8 justify-center">
                         <Brand />
-
                     </div>
 
                     {/* Brand for small screens */}
@@ -129,12 +102,14 @@ const Login = () => {
                             placeholder="Email"
                             value={email}
                             onChange={(event) => setEmail(event.target.value)}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <PersonIcon />
-                                    </InputAdornment>
-                                ),
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <PersonIcon />
+                                        </InputAdornment>
+                                    ),
+                                },
                             }}
                         />
                         <FormControl variant="outlined" fullWidth>
@@ -169,7 +144,7 @@ const Login = () => {
                         </div>
                     </form>
                     <ForgotPassword open={forgotPasswordOpen} onClose={handleForgotPasswordClose} />
-                    
+
                 </div>
             </div>
             <Toast open={toastOpen} message={toastMessage} onClose={handleToastClose} /> {/* Add the Toast component here */}
