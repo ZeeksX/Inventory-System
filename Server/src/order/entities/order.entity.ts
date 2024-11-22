@@ -8,7 +8,7 @@ import {
 import { Customer } from 'src/customer/entities/customer.entity';
 import { OrderItem } from 'src/order-item/entities/order-item.entity';
 
-@Entity()
+@Entity('orders')  // Specify the table name if necessary
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;

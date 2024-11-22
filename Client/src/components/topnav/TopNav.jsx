@@ -24,7 +24,7 @@ const TopNav = ({ sidebarOpen, toggleSidebar }) => { // Destructure props correc
 
     return (
         <>
-            <div className={`bg-white flex sm:hidden flex-col items-center w-full shadow-lg ${sidebarOpen ? 'min-h-screen' : ''} ${scrolling ? 'fixed' : ''}`}>
+            <div className={`bg-white flex sm:hidden flex-col items-center w-full shadow-lg ${sidebarOpen ? 'min-h-screen' : ''} ${scrolling ? 'fixed z-10' : ''}`}>
                 <div className='flex flex-col w-full p-4 items-center justify-between '>
                     <div className='w-full flex flex-row items-center justify-between'>
                         <div className='flex flex-row items-center gap-2'>

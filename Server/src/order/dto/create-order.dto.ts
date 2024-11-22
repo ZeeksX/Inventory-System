@@ -1,20 +1,25 @@
-import { IsNumber, IsString, IsArray, ArrayNotEmpty } from 'class-validator';
-import { CreateOrderItemDto } from 'src/order-item/dto/create-order-item.dto';
+// src/dto/order.dto.ts
 
-export class CreateOrderDto {
+import { IsNotEmpty, IsString, IsEmail, IsDecimal } from 'class-validator';
+
+export class OrderDto {
+  @IsNotEmpty()
   @IsString()
-  orderDate: string;
+  customerName: string;
 
+  @IsNotEmpty()
+  @IsEmail()
+  customerEmail: string;
+
+  @IsNotEmpty()
   @IsString()
-  status: string;
+  customerTel: string;
 
-  @IsNumber()
-  totalPrice: number;
+  @IsNotEmpty()
+  @IsString()
+  item: string; // Product name
 
-  @IsNumber()
-  customerId: number;
-
-  @IsArray()
-  @ArrayNotEmpty()
-  orderItems: CreateOrderItemDto[];
+  @IsNotEmpty()
+  @IsDecimal()
+  totalPrice: number; // Total price for the order
 }

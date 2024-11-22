@@ -1,23 +1,20 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Order } from 'src/order/entities/order.entity';
+import { Entity, Column,PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Order } from '../../order/entities/order.entity';  // Adjust the path according to your project structure
 
-@Entity()
+@Entity('customers')  // Specify the table name if necessary
 export class Customer {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn()  // Add primary key
+  id: number;  // Unique identifier for the customer
 
-  @Column()
-  name: string;
+  @Column({ type: 'varchar', length: 255 })
+  name: string;  // Name of the customer
 
-  @Column()
-  email: string;
+  @Column({ type: 'varchar', length: 255, unique: true })
+  email: string;  // Unique email address of the customer
 
-  @Column({ nullable: true })
-  phoneNumber?: string;
-
-  @Column({ nullable: true })
-  address?: string;
+  @Column({ type: 'varchar', length: 15, nullable: true })
+  phone: string;  // Phone number of the customer (optional)
 
   @OneToMany(() => Order, (order) => order.customer)
-  orders: Order[];
+  orders: Order[];  // Relationship to Order entities
 }

@@ -1,58 +1,21 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Patch,
-} from '@nestjs/common';
+// src/controllers/order.controller.ts
+
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { OrderService } from './order.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderDto } from './dto/create-order.dto';
+import { Order } from './entities/order.entity';
 
 @Controller('orders')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  // Create a new order
   @Post()
-  async create(@Body() createOrderDto: CreateOrderDto) {
-    return await this.orderService.create(createOrderDto);
+  async createOrder(@Body() orderDto: OrderDto): Promise<Order> {
+    return this.orderService.createOrder(orderDto);
   }
 
-  // Get all orders
   @Get()
-  async findAll() {
-    return await this.orderService.findAll();
-  }
-
-  // Get a single order by ID
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return await this.orderService.findOne(+id);
-  }
-
-  // Update an order by ID
-  @Patch(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() updateOrderDto: UpdateOrderDto,
-  ) {
-    return await this.orderService.update(+id, updateOrderDto);
-  }
-
-  // Delete an order by ID
-  @Delete(':id')
-  async remove(@Param('id') id: number) {
-    await this.orderService.remove(+id);
-    return { message: `Order with ID ${id} deleted successfully` };
-  }
-
-  // Get total number of orders
-  @Get('count')
-  async getTotalOrders() {
-    const count = await this.orderService.getTotalOrders();
-    return { totalOrders: count };
+  async getAllOrders(): Promise<Order[]> {
+    return this.orderService.getAllOrders();
   }
 }
