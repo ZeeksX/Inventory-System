@@ -9,11 +9,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = 3000;
 
-  app.useGlobalGuards(new JwtAuthGuard());
+  // app.useGlobalGuards(new JwtAuthGuard());
 
   // Apply RolesGuard globally
-  const reflector = app.get(Reflector);
-  app.useGlobalGuards(new RolesGuard(reflector));
+  // const reflector = app.get(Reflector);
+  // app.useGlobalGuards(new RolesGuard(reflector));
 
   app.setGlobalPrefix('api/v1');
   app.enableCors({ origin: 'http://localhost:5173' });

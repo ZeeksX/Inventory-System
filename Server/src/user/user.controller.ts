@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { userRole } from '../../enum/role.enum';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Assuming you have JWT Guard
-import { RolesGuard } from '../auth/roles.guard'; // Guard for roles
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Guard for authenticating JWT
+import { RolesGuard } from '../auth/roles.guard'; // Guard for role-based authorization
 import { Roles } from '../auth/role.decorator'; // Custom decorator for role-based access control
 
 @Controller('users')
@@ -37,7 +37,7 @@ export class UserController {
     return this.userService.login(email, password);
   }
 
-  //Get all users (admin only)
+  // Get all users (admin only)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(userRole.admin)
   @Get()
@@ -46,7 +46,7 @@ export class UserController {
   }
 
   // Get a single user by ID
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard) // Protect this route with JWT Guard
   @Get(':id')
   async findOneById(@Param('id') id: number) {
     return this.userService.findOneById(id);

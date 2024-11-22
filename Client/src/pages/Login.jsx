@@ -26,27 +26,39 @@ const Login = () => {
         event.preventDefault();
     };
 
+    // Reuse the login function
+    const login = async (email, password) => {
+        const response = await fetch("http://localhost:3000/api/v1/users/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) {
+            // Handle error response
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Login failed");
+        }
+
+        const data = await response.json();
+        if (data.accessToken) {
+            localStorage.setItem("token", data.accessToken); // Store token in localStorage
+            return data;
+        } else {
+            throw new Error("Login failed");
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const res = await fetch("http://localhost:3000/api/v1/users/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                console.log(data);
-                navigate("/dashboard"); // Navigate to /dashboard on successful login
-            } else {
-                console.error("Login failed:", res.statusText);
-            }
+            const data = await login(email, password); // Call login function
+            console.log("Login successful:", data);
+            navigate("/dashboard"); // Navigate to dashboard on successful login
         } catch (error) {
-            console.error("API link not working", error);
+            console.error("Error during login:", error.message);
+            alert("Invalid email or password. Please try again.");
         }
     };
 
@@ -86,7 +98,7 @@ const Login = () => {
                         </button>
                     </div>
                 </nav>
-                <div className="flex flex-col w-1/3 rounded-xl bg-[white] text-black px-3 border gap-4 py-8">
+                <div className="flex flex-col w-1/ 3 rounded-xl bg-[white] text-black px-3 border gap-4 py-8">
                     <div className="flex flex-col justify-center items-center gap-2">
                         <h3 className="text-black font-bold text-2xl">Welcome Back</h3>
                         <p className="text-black text-xl italic">Sign in to access your inventory</p>
@@ -96,30 +108,31 @@ const Login = () => {
                             fullWidth
                             variant="outlined"
                             placeholder="Email"
+                            value={email}
                             onChange={(event) => setEmail(event.target.value)}
-                            slotProps={{
-                                input: {
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <PersonIcon />
-                                        </InputAdornment>
-                                    ),
-                                },
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <PersonIcon />
+                                    </InputAdornment>
+                                ),
                             }}
                         />
                         <FormControl variant="outlined" fullWidth>
                             <OutlinedInput
                                 id="outlined-adornment-password"
                                 placeholder="Password"
+                                value={password}
                                 onChange={(event) => setPassword(event.target.value)}
-                                type={showPassword ? 'text' : 'password'}
+                                type={showPassword ? "text" : "password"}
                                 startAdornment={
                                     <InputAdornment position="start">
                                         <IconButton
-                                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
                                             onClick={handleClickShowPassword}
                                             onMouseDown={handleMouseDownPassword}
-                                            edge="start">
+                                            edge="start"
+                                        >
                                             {showPassword ? <VisibilityOff /> : <Visibility />}
                                         </IconButton>
                                     </InputAdornment>
