@@ -3,7 +3,7 @@ import { Category } from 'src/category/entities/category.entity';
 import { Supplier } from 'src/supplier/entities/supplier.entity';
 import { OrderItem } from 'src/order-item/entities/order-item.entity';
 import { StockLog } from 'src/stock-log/entities/stock-log.entity';
-import { ServiceRequest } from 'src/service-request/entities/service-request.entity'; // Adjust the path according to your project structure
+
 
 @Entity()
 export class Product {
@@ -31,6 +31,5 @@ export class Product {
   @OneToMany(() => StockLog, (stockLog) => stockLog.product)
   stockLogs: StockLog[];  // Relationship to StockLog entities
 
-  @OneToMany(() => ServiceRequest, (serviceRequest) => serviceRequest.product)
-  serviceRequests: ServiceRequest[];  // Relationship to ServiceRequest entities
+  
 }
