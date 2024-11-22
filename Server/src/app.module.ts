@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { DatabaseModule } from 'database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { ServiceModule } from './service-request/service-request.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { JwtModule } from '@nestjs/jwt';
     OrderItemModule,
     CustomerModule,
     UserModule,
+    ServiceModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET, // Use the secret from the environment variable
       signOptions: { expiresIn: '60s' }, // Set token expiration time as needed
