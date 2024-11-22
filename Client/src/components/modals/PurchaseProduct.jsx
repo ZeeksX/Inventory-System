@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -6,38 +6,62 @@ import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-const PurchaseProduct = ({ username, email, item, setUsername, setEmail, setItem, handleSubmit }) => {
+const PurchaseProduct = ({
+    username,
+    email,
+    item,
+    setUsername,
+    setEmail,
+    setItem,
+    handleSubmit,
+}) => {
     const [quantity, setQuantity] = useState(1);
+    const [inventory, setInventory] = useState([]);
     const [loading, setLoading] = useState(false);
     const [inventoryMessage, setInventoryMessage] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
 
-    const checkInventory = async (selectedItem) => {
-        setLoading(true);
-        setInventoryMessage('');
-
-        // Simulating an API call to check inventory
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate loading time
-
-        // Mock inventory data
-        const inventory = {
-            "iPhone 13": 10,
-            "Samsung A12": 0,
-            "Samsung z-fold": 5,
-            "None": 0
+    // Fetch inventory data when the component mounts
+    useEffect(() => {
+        const fetchInventory = async () => {
+            setLoading(true);
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/products');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const inventoryData = await response.json();
+                console.log(inventoryData);
+                setInventory(inventoryData);
+            } catch (error) {
+                console.error('Error fetching inventory:', error);
+            }
+            setLoading(false);
         };
 
-        if (inventory[selectedItem] > 0) {
-            setInventoryMessage(`Available: ${inventory[selectedItem]} in stock`);
-        } else {
-            setInventoryMessage('Out of stock');
+        fetchInventory();
+    }, []);
+
+    const checkInventory = (selectedItem) => {
+        const product = inventory.find(item => item.name === selectedItem);
+        if (product) {
+            if (product.stock > 0) {
+                setInventoryMessage(`Available: ${product.stock} in stock`);
+            } else {
+                setInventoryMessage('Out of stock');
+            }
         }
-        setLoading(false);
     };
 
     const handleItemChange = (e) => {
         const selectedItem = e.target.value;
         setItem(selectedItem);
         checkInventory(selectedItem);
+    };
+
+    const handleQuantityChange = (e) => {
+        const value = Math.max(1, parseInt(e.target.value, 10) || 1);
+        setQuantity(value);
     };
 
     return (
@@ -56,6 +80,7 @@ const PurchaseProduct = ({ username, email, item, setUsername, setEmail, setItem
                     label="Email"
                     variant="outlined"
                     type="email"
+                    required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
@@ -66,39 +91,46 @@ const PurchaseProduct = ({ username, email, item, setUsername, setEmail, setItem
                     variant="outlined"
                     type="tel"
                     required
-                    onChange={(e) => setItem(e.target.value)}
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
                 />
             </FormControl>
             <FormControl fullWidth variant="outlined">
-                <InputLabel id="demo-simple-select-label">Item to purchase</InputLabel>
+                <InputLabel id="item-select-label">Item to purchase</InputLabel>
                 <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
+                    labelId="item-select-label"
+                    id="item-select"
                     value={item}
-                    label="Item"
                     onChange={handleItemChange}
+                    label="Item"
                 >
-                    <MenuItem value={"iPhone 13"}>iPhone 13</MenuItem>
-                    <MenuItem value={"Samsung A12"}>Samsung A12</MenuItem>
-                    <MenuItem value={"Samsung z-fold"}>Samsung z-fold</MenuItem>
-                    <MenuItem value={"None"}>None</MenuItem>
+                    {inventory.map((product) => (
+                        <MenuItem key={product.id} value={product.name}>
+                            {product.name}
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
-            {loading && <p>Checking inventory...</p>}
+            {loading && <p>Loading inventory...</p>}
             {inventoryMessage && <p>{inventoryMessage}</p>}
             <FormControl fullWidth variant="outlined">
                 <TextField
                     label="Quantity"
                     type="number"
                     value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    slotProps=
-                    {{
-                        input: { min: 1 }
-                    }} // Minimum quantity of 1
+                    onChange={handleQuantityChange}
+                    slotProps={{
+                        input: {
+                            min: 1,
+                            max: item ? inventory.find(product => product.name === item)?.stock : undefined,
+                        },
+                    }}
+                    helperText={
+                        item ? `Max available: ${inventory.find(product => product.name === item)?.stock || 0}` : ''
+                    }
                 />
             </FormControl>
-            <div className="flex flex-row justify-between gap-4 lg:gap-0 items-center w-full">
+            <div className="flex flex-row justify-between gap-4 items-center w-full">
                 <Button
                     variant="contained"
                     color="primary"
@@ -109,12 +141,13 @@ const PurchaseProduct = ({ username, email, item, setUsername, setEmail, setItem
                             backgroundColor: 'green',
                         },
                     }}
+                    disabled={loading || (item && inventory.find(product => product.name === item)?.stock === 0)}
                 >
                     Submit
                 </Button>
             </div>
         </form>
     );
-}
+};
 
 export default PurchaseProduct;
