@@ -1,44 +1,35 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Category } from 'src/category/entities/category.entity';
 import { Supplier } from 'src/supplier/entities/supplier.entity';
 import { OrderItem } from 'src/order-item/entities/order-item.entity';
 import { StockLog } from 'src/stock-log/entities/stock-log.entity';
 
+
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number;  // Unique identifier for the product
 
   @Column()
-  name: string;
-
-  // @Column()
-  // sku: string;
-
-  // @Column('text')
-  // description: string;
+  name: string;  // Name of the product
 
   @Column('decimal', { precision: 10, scale: 2 })
-  price: number;
+  price: number;  // Price of the product
 
   @Column()
-  stock: number;
+  stock: number;  // Current stock level of the product
 
   @ManyToOne(() => Category, (category) => category.products)
-  category: Category;
+  category: Category;  // Relationship to the Category entity
 
   @ManyToOne(() => Supplier, (supplier) => supplier.products)
-  supplier: Supplier;
+  supplier: Supplier;  // Relationship to the Supplier entity
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
-  orderItems: OrderItem[];
+  orderItems: OrderItem[];  // Relationship to OrderItem entities
 
   @OneToMany(() => StockLog, (stockLog) => stockLog.product)
-  stockLogs: StockLog[];
+  stockLogs: StockLog[];  // Relationship to StockLog entities
+
+  
 }

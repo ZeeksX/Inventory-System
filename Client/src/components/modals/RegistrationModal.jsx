@@ -7,19 +7,19 @@ const RegistrationModal = ({ open, onClose }) => {
     const [registerEmail, setRegisterEmail] = useState("");
     const [registerPassword, setRegisterPassword] = useState("");
     const [registerUsername, setRegisterUsername] = useState("");
-    const [registerRole, setRegisterRole] = useState("");
+    const [registerPhoneNum, setRegisterPhoneNum] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const res = await fetch("http://localhost:3000/api/v1/users/register", {
+            const res = await fetch("http://localhost:3000/api/v1/users/customers", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ username: registerUsername, email: registerEmail, password: registerPassword, role: registerRole }),
+                body: JSON.stringify({ username: registerUsername, email: registerEmail, password: registerPassword, phoneNum: registerPhoneNum }),
             });
 
             if (res.ok) {
@@ -60,8 +60,8 @@ const RegistrationModal = ({ open, onClose }) => {
                     <TextField
                         fullWidth
                         variant="outlined"
-                        placeholder="Role"
-                        onChange={(event) => setRegisterRole(event.target.value)}
+                        placeholder="Phone Number"
+                        onChange={(event) => setRegisterPhoneNum(event.target.value)}
                     />
                     <FormControl variant="outlined" fullWidth>
                         <OutlinedInput

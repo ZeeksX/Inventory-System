@@ -12,13 +12,11 @@ export class ProductService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  // Create a new product
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const product = this.productRepository.create(createProductDto);
     return this.productRepository.save(product);
   }
 
-  // Get all products with optional filtering
   async findAll(categoryId?: number, supplierId?: number): Promise<Product[]> {
     const query = this.productRepository.createQueryBuilder('product');
 
@@ -33,7 +31,6 @@ export class ProductService {
     return query.getMany();
   }
 
-  // Get a single product by ID
   async findOne(id: number): Promise<Product> {
     const product = await this.productRepository.findOne({ where: { id } });
     if (!product) {
@@ -42,33 +39,26 @@ export class ProductService {
     return product;
   }
 
-  // Update a product
-  async update(
-    id: number,
-    updateProductDto: UpdateProductDto,
-  ): Promise<Product> {
+  async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
     const product = await this.findOne(id);
-
-    Object.assign(product, updateProductDto); // Merge new data
+    Object.assign(product, updateProductDto);
     return this.productRepository.save(product);
   }
 
-  // Delete a product
   async remove(id: number): Promise<void> {
     const product = await this.findOne(id);
     await this.productRepository.remove(product);
   }
 
-  // Get total number of products
-  async getTotalCount(): Promise<number> {
-    return this.productRepository.count();
-  }
+async getTotalCount(): Promise<number> {
+  return this.productRepository.count();
+}
 
-  // Get products with low stock
-  async getLowStockProducts(threshold: number = 5): Promise<Product[]> {
-    return this.productRepository
-      .createQueryBuilder('product')
-      .where('product.stock < :threshold', { threshold })
-      .getMany();
-  }
+// Get products with low stock
+async getLowStockProducts(threshold: number = 5): Promise<Product[]> {
+  return this.productRepository
+    .createQueryBuilder('product')
+    .where('product.stock < :threshold', { threshold })
+    .getMany();
+}
 }
