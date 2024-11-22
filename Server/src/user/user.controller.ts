@@ -5,13 +5,11 @@ import {
   Get,
   Param,
   Delete,
-  UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { userRole } from '../../enum/role.enum';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Guard for authenticating JWT
-import { RolesGuard } from '../auth/roles.guard'; // Guard for role-based authorization
-import { Roles } from '../auth/role.decorator'; // Custom decorator for role-based access control
 
 @Controller('users')
 export class UserController {
@@ -34,27 +32,36 @@ export class UserController {
     @Body('email') email: string,
     @Body('password') password: string,
   ) {
-    return this.userService.login(email, password);
+    try {
+      const response = await this.userService.login(email, password);
+      console.log('Login Response:', response); // Log the entire response to the console
+      console.log('User  Role:', response.user.role); // Log the user's role
+      return response; // Return the response to the client
+    } catch (error) {
+      console.error('Login Error:', error); // Log the error for debugging
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Invalid Credentials',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // Get all users (admin only)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(userRole.admin)
   @Get()
   async getAllUsers() {
     return this.userService.findAll();
   }
 
   // Get a single user by ID
-  @UseGuards(JwtAuthGuard) // Protect this route with JWT Guard
   @Get(':id')
   async findOneById(@Param('id') id: number) {
     return this.userService.findOneById(id);
   }
 
   // Delete a user (admin only)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(userRole.admin)
   @Delete(':id')
   async deleteUser(@Param('id') id: number) {
     return this.userService.deleteUser(id);

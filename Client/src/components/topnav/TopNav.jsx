@@ -35,7 +35,7 @@ const TopNav = ({ sidebarOpen, toggleSidebar }) => { // Destructure props correc
                             {sidebarOpen ? <CloseIcon /> : <DensityMediumIcon />}
                         </div>
                     </div>
-                    {sidebarOpen && <SidebarItems />}
+                    {sidebarOpen && <SidebarItems toggleSidebar={toggleSidebar} />} {/* Pass toggleSidebar here */}
                 </div>
             </div>
         </>
