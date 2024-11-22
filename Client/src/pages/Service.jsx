@@ -16,7 +16,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
     // Fetch service requests and orders from the backend
     const fetchServiceRequests = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/v1/services');
+        const response = await fetch('http://localhost:3000/api/v1/request/service');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -50,7 +50,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
     e.preventDefault();
     if (newRequest.customerName && newRequest.phoneModel && newRequest.issue) {
       try {
-        const response = await fetch('http://localhost:3000/api/v1/services', {
+        const response = await fetch('http://localhost:3000/api/v1/request/service', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
