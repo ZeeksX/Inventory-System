@@ -9,6 +9,8 @@ import { Supplier } from 'src/supplier/entities/supplier.entity';
 import { StockLog } from 'src/stock-log/entities/stock-log.entity';
 import { Category } from 'src/category/entities/category.entity';
 import { User } from 'src/user/user.entity';
+import { Purchase } from 'src/request/entities/purchase.entity';
+import { ServiceRequest } from 'src/request/entities/service-request.entity';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { User } from 'src/user/user.entity';
           StockLog,
           Category,
           User,
+          Purchase,
+          ServiceRequest,
         ],
         synchronize: true,
       }),

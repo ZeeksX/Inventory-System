@@ -15,7 +15,7 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   // Register a new user
   async register(
@@ -37,7 +37,10 @@ export class UserService {
   }
 
   // Login feature with email and password validation
-  async login(email: string, password: string): Promise<{ message: string; user: Partial<User>; token: string }> {
+  async login(
+    email: string,
+    password: string,
+  ): Promise<{ message: string; user: Partial<User>; token: string }> {
     const user = await this.usersRepository.findOne({ where: { email } });
 
     if (!user) {
@@ -54,7 +57,7 @@ export class UserService {
     const token = this.jwtService.sign({
       id: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
     });
 
     return {
