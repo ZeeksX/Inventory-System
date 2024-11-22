@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
+import Brand from "../components/brand/Brand"
 import RequestService from "../components/modals/RequestService";
+import RegistrationModal from '../components/modals/RegistrationModal';
 import PurchaseProduct from "../components/modals/PurchaseProduct"; // Make sure to import this
 
 const Request = ({ sidebarOpen, toggleSidebar }) => {
   const [item, setItem] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [open, setOpen] = useState(false);
   const [serviceRequests, setServiceRequests] = useState([
     { id: 1, customerName: 'John Doe', phoneModel: 'iPhone 13', issue: 'Screen Replacement', date: '2023-10-01' },
     { id: 2, customerName: 'Jane Smith', phoneModel: 'Samsung Galaxy S21', issue: 'Battery Replacement', date: '2023-10-02' },
@@ -23,7 +26,7 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
   });
   const [modalOpen, setModalOpen] = useState(false);
   const [formType, setFormType] = useState(''); // 'purchase' or 'service'
-
+  const navItems = ["Home", "About", "Contact"];
   const handleChange = (event) => {
     setItem(event.target.value);
   };
@@ -32,7 +35,12 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
     const { name, value } = e.target;
     setNewRequest({ ...newRequest, [name]: value });
   };
-
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleRegistrationClose = () => {
+    setOpen(false);
+  };
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -111,7 +119,29 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
 
   return (
     <>
-      <div className="home-page flex flex-row w-full min-h-screen">
+      <div className=" flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
+        <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb-4">
+          {/* Brand for large screens */}
+          <div className="hidden lg:flex flex-row items-center w-full h-8 justify-between">
+            <Brand />
+            <div className="flex flex-row gap-8 justify-between">
+              <ul className="flex flex-row gap-8">
+                {navItems.map((item) => (
+                  <li key={item} className="text-[black] hover:text-[darkgrey] text-xl cursor-pointer">{item}</li>
+                ))}
+              </ul>
+              <button onClick={handleClickOpen} className="rounded bg-blue-700 text-xl hover:bg-[green] text-white py-1 px-3 border border-transparent transition-all focus:outline-none focus:ring-2">
+                Register
+              </button>
+            </div>
+          </div>
+
+          {/* Brand for small screens */}
+          <div className="lg:hidden flex justify-center items-center p-2">
+            <Brand />
+          </div>
+        </nav>
+
         <div className="flex flex-col items-center w-full">
           <h2 className="text-xl font-semibold mb-4">Choose an Option</h2>
           <div className=" flex gap-4">
@@ -163,6 +193,7 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
             )}
           </Box>
         </Modal>
+        <RegistrationModal open={open} onClose={handleRegistrationClose} />
       </div>
     </>
   );

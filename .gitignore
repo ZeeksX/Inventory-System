@@ -7,7 +7,7 @@ dist
 /Client/node_modules
 node_modules/
 /Server/node_modules
-/Server
+
 # Logs
 logs
 *.log

@@ -15,7 +15,7 @@ const PurchaseProduct = ({
     setItem,
     handleSubmit,
 }) => {
-    const [quantity, setQuantity] = useState(1);
+    const [quantity, setQuantity] = useState(0);
     const [inventory, setInventory] = useState([]);
     const [loading, setLoading] = useState(false);
     const [inventoryMessage, setInventoryMessage] = useState('');
@@ -141,7 +141,7 @@ const PurchaseProduct = ({
                             backgroundColor: 'green',
                         },
                     }}
-                    disabled={loading || (item && inventory.find(product => product.name === item)?.stock === 0)}
+                    disabled={!!loading || (item && inventory.find(product => product.name === item)?.stock === 0)}
                 >
                     Submit
                 </Button>

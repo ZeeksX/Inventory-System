@@ -8,7 +8,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { TextField, InputAdornment, FormControl, OutlinedInput, IconButton } from "@mui/material";
 import "../styles/main.css";
 import ForgotPassword from '../components/modals/ForgotPassword';
-import RegistrationModal from '../components/modals/RegistrationModal';
+
 import Toast from '../components/modals/Toast'; // Import the Toast component
 
 const Login = () => {
@@ -65,9 +65,7 @@ const Login = () => {
         setToastOpen(false);
     };
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
+   
 
     const handleForgotPasswordOpen = () => {
         setForgotPasswordOpen(true);
@@ -77,27 +75,16 @@ const Login = () => {
         setForgotPasswordOpen(false);
     };
 
-    const handleRegistrationClose = () => {
-        setOpen(false);
-    };
+    
 
     return (
         <>
-            <div className="flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
+            <div className=" flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
                 <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb-4">
                     {/* Brand for large screens */}
                     <div className="hidden lg:flex flex-row items-center w-full h-8 justify-between">
                         <Brand />
-                        <div className="flex flex-row gap-8 justify-between">
-                            <ul className="flex flex-row gap-8">
-                                {navItems.map((item) => (
-                                    <li key={item} className="text-[black] hover:text-[darkgrey] text-xl cursor-pointer">{item}</li>
-                                ))}
-                            </ul>
-                            <button onClick={handleClickOpen} className="rounded bg-blue-700 text-xl hover:bg-[green] text-white py-1 px-3 border border-transparent transition-all focus:outline-none focus:ring-2">
-                                Register
-                            </button>
-                        </div>
+
                     </div>
 
                     {/* Brand for small screens */}
@@ -106,7 +93,7 @@ const Login = () => {
                     </div>
                 </nav>
 
-                <div className="flex flex-col max-w-96 lg:max-w-screen-md w-full lg:w-1/3 rounded-xl bg-[white] text-black px-4 lg:px-3 border gap-4 py-8">
+                <div className="login flex flex-col max-w-96 lg:max-w-screen-md w-full lg:w-1/3 rounded-xl bg-[white] text-black px-4 lg:px-3 border gap-4 py-8">
                     <div className="flex flex-col justify-center items-center gap-2">
                         <h3 className="text-black font-bold text-2xl">Welcome Back</h3>
                         <p className="text-black text-xl text-center italic">Sign in to access your inventory</p>
@@ -157,7 +144,7 @@ const Login = () => {
                         </div>
                     </form>
                     <ForgotPassword open={forgotPasswordOpen} onClose={handleForgotPasswordClose} />
-                    <RegistrationModal open={open} onClose={handleRegistrationClose} />
+                    
                 </div>
             </div>
             <Toast open={toastOpen} message={toastMessage} onClose={handleToastClose} /> {/* Add the Toast component here */}

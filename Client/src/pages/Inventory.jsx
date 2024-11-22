@@ -24,16 +24,61 @@ const Inventory = ({ sidebarOpen, toggleSidebar }) => {
         fetchInventory();
     }, []);
 
-    const handleAddStock = (id) => {
-        setInventory(inventory.map(item =>
+    const handleAddStock = async (id) => {
+        const updatedInventory = inventory.map(item =>
             item.id === id ? { ...item, stock: item.stock + 1 } : item
-        ));
+        );
+
+        setInventory(updatedInventory); // Update local state
+
+        // Update stock in the database
+        try {
+            const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
+                method: 'PATCH', // Use PATCH to update a resource
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ stock: updatedInventory.find(item => item.id === id).stock }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+        } catch (error) {
+            console.error("Error updating stock:", error);
+            // Optionally revert the local state if the update fails
+            setInventory(inventory);
+        }
     };
 
-    const handleRemoveStock = (id) => {
-        setInventory(inventory.map(item =>
-            item.id === id && item.stock > 0 ? { ...item, stock: item.stock - 1 } : item
-        ));
+    const handleRemoveStock = async (id) => {
+        const itemToUpdate = inventory.find(item => item.id === id);
+        if (itemToUpdate && itemToUpdate.stock > 0) {
+            const updatedInventory = inventory.map(item =>
+                item.id === id ? { ...item, stock: item.stock - 1 } : item
+            );
+
+            setInventory(updatedInventory); // Update local state
+
+            // Update stock in the database
+            try {
+                const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
+                    method: 'PATCH', // Use PATCH to update a resource
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ stock: updatedInventory.find(item => item.id === id).stock }),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+            } catch (error) {
+                console.error("Error updating stock:", error);
+                // Optionally revert the local state if the update fails
+                setInventory(inventory);
+            }
+        }
     };
 
     const handleInputChange = (e) => {
