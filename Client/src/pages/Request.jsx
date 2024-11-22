@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import RequestService from "../components/modals/RequestService";
 import PurchaseProduct from "../components/modals/PurchaseProduct"; // Make sure to import this
 
-const Request = ({sidebarOpen, toggleSidebar}) => {
+const Request = ({ sidebarOpen, toggleSidebar }) => {
   const [item, setItem] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -45,7 +45,7 @@ const Request = ({sidebarOpen, toggleSidebar}) => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/v1/users/register', {
+      const response = await fetch('http://localhost:3000/api/v1/request/purchase', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

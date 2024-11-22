@@ -29,6 +29,29 @@ const Login = () => {
         event.preventDefault();
     };
 
+    // Reuse the login function
+    const login = async (email, password) => {
+        const response = await fetch("http://localhost:3000/api/v1/users/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) {
+            // Handle error response
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Login failed");
+        }
+
+        const data = await response.json();
+        if (data.accessToken) {
+            localStorage.setItem("token", data.accessToken); // Store token in localStorage
+            return data;
+        } else {
+            throw new Error("Login failed");
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -57,7 +80,8 @@ const Login = () => {
                 setToastOpen(true); // Show the toast
             }
         } catch (error) {
-            console.error("API link not working", error);
+            console.error("Error during login:", error.message);
+            alert("Invalid email or password. Please try again.");
         }
     };
 
@@ -116,30 +140,31 @@ const Login = () => {
                             fullWidth
                             variant="outlined"
                             placeholder="Email"
+                            value={email}
                             onChange={(event) => setEmail(event.target.value)}
-                            slotProps={{
-                                input: {
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <PersonIcon />
-                                        </InputAdornment>
-                                    ),
-                                },
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <PersonIcon />
+                                    </InputAdornment>
+                                ),
                             }}
                         />
                         <FormControl variant="outlined" fullWidth>
                             <OutlinedInput
                                 id="outlined-adornment-password"
                                 placeholder="Password"
+                                value={password}
                                 onChange={(event) => setPassword(event.target.value)}
-                                type={showPassword ? 'text' : 'password'}
+                                type={showPassword ? "text" : "password"}
                                 startAdornment={
                                     <InputAdornment position="start">
                                         <IconButton
-                                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
                                             onClick={handleClickShowPassword}
                                             onMouseDown={handleMouseDownPassword}
-                                            edge="start">
+                                            edge="start"
+                                        >
                                             {showPassword ? <VisibilityOff /> : <Visibility />}
                                         </IconButton>
                                     </InputAdornment>
