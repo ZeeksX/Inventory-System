@@ -6,13 +6,13 @@ import Brand from "../components/brand/Brand";
 import RequestService from "../components/modals/RequestService";
 import RegistrationModal from '../components/modals/RegistrationModal';
 import PurchaseProduct from "../components/modals/PurchaseProduct";
-import LoginUser from '../components/LoginUser'; // Import the Login component
-import { useAuth } from "../components/Auth"; // Assuming you have an Auth context
+import LoginUser from '../components/LoginUser';
 
-const Request = ({ sidebarOpen, toggleSidebar }) => {
+const Request = () => {
   const [item, setItem] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [open, setOpen] = useState(false);
   const [newRequest, setNewRequest] = useState({
     customerName: '',
@@ -23,10 +23,8 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
   });
   const [modalOpen, setModalOpen] = useState(false);
   const [formType, setFormType] = useState('');
-  const [isRegistered, setIsRegistered] = useState(false); // New state for registration
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State for login status
-
-  const auth = useAuth(); // Use the Auth context to check the user's state
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleChange = (event) => {
     setItem(event.target.value);
@@ -52,16 +50,17 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
     setIsRegistered(true); // Update registration state on success
     setOpen(false); // Close registration modal
   };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = {
-      customerName: username,
-      customerEmail: email,
+      username: username,
+      email: email,
       phoneNumber: newRequest.phoneNumber,
-      item: item,
-      totalPrice: 200.00,
+      itemToPurchase: item,
+      quantity: quantity,
     };
+
+    console.log('Data being sent:', data); // Log the data
 
     try {
       const response = await fetch('http://localhost:3000/api/v1/request/purchase', {
@@ -71,7 +70,6 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
         },
         body: JSON.stringify(data),
       });
-
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -83,7 +81,6 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
       console.error('Error:', error);
     }
   };
-
   const handleSubmitService = async (e) => {
     e.preventDefault();
     if (
@@ -125,6 +122,7 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
   const closeModal = () => {
     setModalOpen(false);
     setNewRequest({ customerName: '', customerEmail: '', phoneNumber: '', phoneModel: '', issueDescription: '' });
+    setQuantity(1); // Reset quantity when closing modal
   };
 
   const handleLoginSuccess = () => {
@@ -157,7 +155,7 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
         {isLoggedIn ? (
           <div className="flex flex-col items-center w-full">
             <h2 className="text-xl font-semibold mb-4">Choose an Option</h2>
-            {isRegistered ? (
+            {isRegistered || isLoggedIn ? (
               <div className="flex gap-4">
                 <Button
                   variant="contained"
@@ -198,7 +196,8 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
               <PurchaseProduct
                 username={username}
                 email={email}
-                item={item}
+                itemToPurchase={item}
+                quantity={quantity} // Pass quantity to PurchaseProduct
                 setUsername={setUsername}
                 setEmail={setEmail}
                 setItem={setItem}

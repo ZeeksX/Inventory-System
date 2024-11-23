@@ -9,13 +9,13 @@ import Button from '@mui/material/Button';
 const PurchaseProduct = ({
     username,
     email,
-    item,
+    itemToPurchase,
+    quantity,
     setUsername,
     setEmail,
     setItem,
     handleSubmit,
 }) => {
-    const [quantity, setQuantity] = useState(0);
     const [inventory, setInventory] = useState([]);
     const [loading, setLoading] = useState(false);
     const [inventoryMessage, setInventoryMessage] = useState('');
@@ -31,7 +31,6 @@ const PurchaseProduct = ({
                     throw new Error('Network response was not ok');
                 }
                 const inventoryData = await response.json();
-                console.log(inventoryData);
                 setInventory(inventoryData);
             } catch (error) {
                 console.error('Error fetching inventory:', error);
@@ -61,7 +60,7 @@ const PurchaseProduct = ({
 
     const handleQuantityChange = (e) => {
         const value = Math.max(1, parseInt(e.target.value, 10) || 1);
-        setQuantity(value);
+        setQuantity(value); // Update quantity state in parent
     };
 
     return (
@@ -100,7 +99,7 @@ const PurchaseProduct = ({
                 <Select
                     labelId="item-select-label"
                     id="item-select"
-                    value={item}
+                    value={itemToPurchase}
                     onChange={handleItemChange}
                     label="Item"
                 >
@@ -120,13 +119,11 @@ const PurchaseProduct = ({
                     value={quantity}
                     onChange={handleQuantityChange}
                     slotProps={{
-                        input: {
-                            min: 1,
-                            max: item ? inventory.find(product => product.name === item)?.stock : undefined,
-                        },
+                        min: 1,
+                        max: itemToPurchase ? inventory.find(product => product.name === itemToPurchase)?.stock : undefined,
                     }}
                     helperText={
-                        item ? `Max available: ${inventory.find(product => product.name === item)?.stock || 0}` : ''
+                        itemToPurchase ? `Max available: ${inventory.find(product => product.name === itemToPurchase)?.stock || 0}` : ''
                     }
                 />
             </FormControl>
@@ -141,7 +138,7 @@ const PurchaseProduct = ({
                             backgroundColor: 'green',
                         },
                     }}
-                    disabled={!!loading || (item && inventory.find(product => product.name === item)?.stock === 0)}
+                    disabled={loading || (itemToPurchase && inventory.find(product => product.name === itemToPurchase)?.stock === 0)}
                 >
                     Submit
                 </Button>
