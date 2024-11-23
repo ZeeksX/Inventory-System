@@ -12,7 +12,6 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { RequestModule } from './request/request.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }), // Load environment variables
