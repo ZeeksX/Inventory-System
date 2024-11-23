@@ -19,7 +19,7 @@ const RegistrationModal = ({ open, onClose }) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ username: registerUsername, email: registerEmail, password: registerPassword, phoneNum: registerPhoneNum }),
+                body: JSON.stringify({ username: registerUsername, email: registerEmail, password: registerPassword, phoneNum: registerPhoneNum, role: "customer" }),
             });
 
             if (res.ok) {

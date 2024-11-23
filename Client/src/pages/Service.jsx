@@ -9,7 +9,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
   const [newRequest, setNewRequest] = useState({
     customerName: '',
     phoneModel: '',
-    issue: '',
+    issueDescription: '',
   });
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (newRequest.customerName && newRequest.phoneModel && newRequest.issue) {
+    if (newRequest.customerName && newRequest.phoneModel && newRequest.issueDescription) {
       try {
         const response = await fetch('http://localhost:3000/api/v1/request/service', {
           method: 'POST',
@@ -64,7 +64,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
 
         const result = await response.json();
         setServiceRequests([...serviceRequests, result]); // Add the new service request to the local state
-        setNewRequest({ customerName: '', phoneModel: '', issue: '' }); // Reset form
+        setNewRequest({ customerName: '', phoneModel: '', issueDescription: '' }); // Reset form
       } catch (error) {
         console.error('Error submitting service request:', error);
       }
@@ -102,7 +102,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
               <textarea
                 name="issue"
                 placeholder="Issue Description"
-                value={newRequest.issue}
+                value={newRequest.issueDescription}
                 onChange={handleInputChange}
                 className="mb-4 p-2 border border-gray-300 rounded"
                 required
@@ -130,7 +130,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
                     <tr key={request.id} className="border-b">
                       <td className="py-2 px-4">{request.customerName}</td>
                       <td className="py-2 px-4">{request.phoneModel}</td>
-                      <td className="py-2 px-4">{request.issue}</td>
+                      <td className="py-2 px-4">{request.issueDescription}</td>
                       <td className="py-2 px-4">{request.serviceDate}</td>
                     </tr>
                   ))}
