@@ -34,8 +34,8 @@ export class UserController {
   ) {
     try {
       const response = await this.userService.login(email, password);
-      console.log('Login Response:', response); // Log the entire response to the console
-      console.log('User  Role:', response.user.role); // Log the user's role
+      // console.log('Login Response:', response); // Log the entire response to the console
+      // console.log('User  Role:', response.user.role); // Log the user's role
       return response; // Return the response to the client
     } catch (error) {
       console.error('Login Error:', error); // Log the error for debugging
