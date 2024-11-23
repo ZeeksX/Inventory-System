@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { AuthProvider } from '../components/Auth';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
 import TopNav from '../components/topnav/TopNav';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
 
 const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
-  // Sample user data
-  const [users, setUsers] = useState([]); // Initialize as an empty array
+  const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: '' });
   const [editingUser, setEditingUser] = useState(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const getUsers = async () => {
     try {
@@ -16,7 +18,7 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
       });
       if (res.ok) {
         const data = await res.json();
-        setUsers(data); // Set the fetched users
+        setUsers(data);
       } else {
         console.error("Failed to fetch users:", res.statusText);
       }
@@ -26,7 +28,7 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
   };
 
   useEffect(() => {
-    getUsers(); // Call getUsers when the component mounts
+    getUsers();
   }, []);
 
   const handleInputChange = (e) => {
@@ -38,15 +40,28 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
     }
   };
 
-  const handleAddUser = (e) => {
+  const handleAddUser = async (e) => {
     e.preventDefault();
-    if (newUser.name && newUser.email && newUser.role) {
-      const newUserWithId = {
-        id: users.length ? Math.max(users.map(user => user.id)) + 1 : 1, // Generate new ID
-        ...newUser,
-      };
-      setUsers([...users, newUserWithId]); // Add new user
-      setNewUser({ name: '', email: '', role: '' }); // Reset form
+    if (newUser.username && newUser.email && newUser.role) {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newUser),
+        });
+
+        if (response.ok) {
+          const createdUser = await response.json();
+          setUsers([...users, createdUser]);
+          setNewUser({ username: '', email: '', role: '' });
+        } else {
+          console.error("Failed to add user:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error adding user:", error);
+      }
     }
   };
 
@@ -54,21 +69,56 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
     setEditingUser(user);
   };
 
-  const handleUpdateUser = (e) => {
+  const handleUpdateUser = async (e) => {
     e.preventDefault();
     if (editingUser) {
-      setUsers(users.map(user => (user.id === editingUser.id ? editingUser : user)));
-      setEditingUser(null); // Reset editing state
+      try {
+        const response = await fetch(`http://localhost:3000/api/v1/users/${editingUser.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(editingUser),
+        });
+
+        if (response.ok) {
+          setUsers(users.map(user => (user.id === editingUser.id ? editingUser : user)));
+          setEditingUser(null);
+        } else {
+          console.error("Failed to update user:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error updating user:", error);
+      }
     }
   };
 
   const handleDeleteUser = (id) => {
-    setUsers(users.filter(user => user.id !== id));
+    setUserToDelete(id);
+    setConfirmDeleteOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/users/${userToDelete}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setUsers(users.filter(user => user.id !== userToDelete));
+        setConfirmDeleteOpen(false);
+        setUserToDelete(null);
+      } else {
+        console.error("Failed to delete user:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   };
 
   return (
     <AuthProvider>
-      <div className="home-page flex flex-col sm:flex-row w-full min-h-screen">
+      <div className="home -page flex flex-col sm:flex-row w-full min-h-screen">
         <SidebarWithRoleControl />
         <TopNav sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
         <div className="ml-0 w-full bg-[#f4f4f4] p-8 sm:ml-64">
@@ -123,7 +173,7 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4">User  List</h2>
             <div className='overflow-scroll sm:overflow-hidden'>
-              <table className=" min-w-full bg-white border border-gray-300">
+              <table className="min-w-full bg-white border border-gray-300">
                 <thead>
                   <tr className="bg-gray-200">
                     <th className="py-2 px-4 text-left">Name</th>
@@ -157,8 +207,22 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
                 </tbody>
               </table>
             </div>
-
           </div>
+
+          <Dialog open={confirmDeleteOpen} onClose={() => setConfirmDeleteOpen(false)}>
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogContent>
+              <p>Are you sure you want to delete this user?</p>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setConfirmDeleteOpen(false)} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={confirmDelete} color="secondary">
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
       </div>
     </AuthProvider>
