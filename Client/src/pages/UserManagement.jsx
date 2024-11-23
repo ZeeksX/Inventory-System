@@ -153,7 +153,7 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
               >
                 <option value="">Select Role</option>
                 <option value="Admin">Admin</option>
-                <option value="User ">User </option>
+                <option value="Staff">Staff</option>
               </select>
               <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
                 {editingUser ? 'Update User' : 'Add User'}

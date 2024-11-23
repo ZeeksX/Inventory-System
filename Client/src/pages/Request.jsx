@@ -6,6 +6,8 @@ import Brand from "../components/brand/Brand";
 import RequestService from "../components/modals/RequestService";
 import RegistrationModal from '../components/modals/RegistrationModal';
 import PurchaseProduct from "../components/modals/PurchaseProduct";
+import LoginUser from '../components/LoginUser'; // Import the Login component
+import { useAuth } from "../components/Auth"; // Assuming you have an Auth context
 
 const Request = ({ sidebarOpen, toggleSidebar }) => {
   const [item, setItem] = useState('');
@@ -22,6 +24,9 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [formType, setFormType] = useState('');
   const [isRegistered, setIsRegistered] = useState(false); // New state for registration
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State for login status
+
+  const auth = useAuth(); // Use the Auth context to check the user's state
 
   const handleChange = (event) => {
     setItem(event.target.value);
@@ -122,6 +127,10 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
     setNewRequest({ customerName: '', customerEmail: '', phoneNumber: '', phoneModel: '', issueDescription: '' });
   };
 
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true); // Update login status on successful login
+  };
+
   return (
     <>
       <div className="flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
@@ -145,29 +154,34 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
           </div>
         </nav>
 
-        <div className="flex flex-col items-center w-full">
-          <h2 className="text-xl font-semibold mb-4">Choose an Option</h2>
-          {isRegistered ? ( // Conditionally render based on registration state
-            <div className="flex gap-4">
-              <Button
-                variant="contained"
-                sx={{ '&:hover': { backgroundColor: 'green' } }}
-                onClick={() => openModal('purchase')}
-              >
-                Purchase an Item
-              </Button>
-              <Button
-                variant="contained"
-                sx={{ '&:hover': { backgroundColor: 'green' } }}
-                onClick={() => openModal('service')}
-              >
-                Submit a Service Request
-              </Button>
-            </div>
-          ) : (
-            <p className="text-lg">Please register to access purchase and service options.</p>
-          )}
-        </div>
+        {isLoggedIn ? (
+          <div className="flex flex-col items-center w-full">
+            <h2 className="text-xl font-semibold mb-4">Choose an Option</h2>
+            {isRegistered ? (
+              <div className="flex gap-4">
+                <Button
+                  variant="contained"
+                  sx={{ '&:hover': { backgroundColor: 'green' } }}
+                  onClick={() => openModal('purchase')}
+                >
+                  Purchase an Item
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{ '&:hover': { backgroundColor: 'green' } }}
+                  onClick={() => openModal('service')}
+                >
+                  Submit a Service Request
+                </Button>
+              </div>
+            ) : (
+              <p className="text-lg">Please register to access purchase and service options.</p>
+            )}
+          </div>
+        ) : (
+          <LoginUser onSuccess={handleLoginSuccess} /> // Render the Login component if not logged in
+        )}
+
         <Modal open={modalOpen} onClose={closeModal}>
           <Box sx={{
             position: 'absolute',
