@@ -1,4 +1,11 @@
-import { Controller, Post, Body, HttpException, HttpStatus, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpException,
+  HttpStatus,
+  Get,
+} from '@nestjs/common';
 import { RequestService } from './request.service';
 import { Purchase } from './entities/purchase.entity';
 import { ServiceRequest } from './entities/service-request.entity';
@@ -12,7 +19,10 @@ export class RequestController {
     try {
       return await this.requestService.createPurchase(purchaseData);
     } catch (error) {
-      throw new HttpException(`Error creating purchase: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        `Error creating purchase: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -21,7 +31,10 @@ export class RequestController {
     try {
       return await this.requestService.findAllPurchases();
     } catch (error) {
-      throw new HttpException(`Error retrieving purchases: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        `Error retrieving purchases: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -30,7 +43,10 @@ export class RequestController {
     try {
       return await this.requestService.createServiceRequest(serviceData);
     } catch (error) {
-      throw new HttpException(`Error creating service request: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        `Error creating service request: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -39,7 +55,10 @@ export class RequestController {
     try {
       return await this.requestService.findAllServiceRequests();
     } catch (error) {
-      throw new HttpException(`Error retrieving service requests: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        `Error retrieving service requests: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

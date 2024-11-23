@@ -1,6 +1,4 @@
-// src/dto/order.dto.ts
-
-import { IsNotEmpty, IsString, IsEmail, IsDecimal } from 'class-validator';
+import { IsNotEmpty, IsString, IsDecimal, IsDate, IsIn } from 'class-validator';
 
 export class OrderDto {
   @IsNotEmpty()
@@ -8,12 +6,15 @@ export class OrderDto {
   customerName: string;
 
   @IsNotEmpty()
-  @IsEmail()
-  customerEmail: string;
+  @IsDate()
+  orderDate: Date;
 
   @IsNotEmpty()
   @IsString()
-  customerTel: string;
+  @IsIn(['Pending', 'Successful', 'Failed'], {
+    message: 'Status must be either Pending, Successful, or Failed',
+  })
+  status: string;
 
   @IsNotEmpty()
   @IsString()

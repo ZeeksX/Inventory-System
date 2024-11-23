@@ -8,16 +8,32 @@ import {
 import { Customer } from 'src/customer/entities/customer.entity';
 import { OrderItem } from 'src/order-item/entities/order-item.entity';
 
-@Entity('orders')  // Specify the table name if necessary
+export enum OrderStatus {
+  Pending = 'Pending',
+  Successful = 'Successful',
+  Failed = 'Failed',
+}
+
+@Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'date' })
-  orderDate: string;
+  @Column()
+  customerName: string;
 
   @Column()
-  status: string;
+  item: string;
+
+  @Column({ type: 'date' })
+  orderDate: Date;
+
+  @Column({
+    type: 'enum',
+    enum: OrderStatus,
+    default: OrderStatus.Pending,
+  })
+  status: OrderStatus;
 
   @Column('decimal', { precision: 10, scale: 2 })
   totalPrice: number;
