@@ -54,9 +54,8 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(newRequest),
-        });
+            body: JSON.stringify(newRequest),
+          });
 
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -100,7 +99,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
                 required
               />
               <textarea
-                name="issue"
+                name="issueDescription"
                 placeholder="Issue Description"
                 value={newRequest.issueDescription}
                 onChange={handleInputChange}
