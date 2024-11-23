@@ -9,15 +9,18 @@ export class ServiceRequest {
   @Column()
   customerName: string;
 
-  @Column()
-  customerEmail: string;
+  // @Column()
+  // customerEmail: string;
 
-  @Column()
-  phoneNumber: string;
+  // @Column()
+  // phoneNumber: string;
 
   @Column()
   phoneModel: string;
 
   @Column()
   issueDescription: string;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  date: Date;
 }
