@@ -33,7 +33,7 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
 
     const fetchOrders = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/v1/orders');
+        const response = await fetch('http://localhost:3000/api/v1/request/purchase');
         if (!response.ok) {
           throw new Error('Failed to fetch orders');
         }
@@ -139,9 +139,9 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
           </div>
 
           {/* Service Requests Table */}
-          <ServiceRequestTable serviceRequests={serviceRequests}/>
+          <ServiceRequestTable serviceRequests={serviceRequests} />
 
-          <RecentOrdersTable orders={orders}/>
+          <RecentOrdersTable orders={orders} />
         </div>
       </div>
     </AuthProvider>

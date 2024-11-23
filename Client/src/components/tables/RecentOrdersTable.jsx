@@ -1,8 +1,9 @@
 import React from 'react'
 
-const RecentOrdersTable = ({orders}) => {
+const RecentOrdersTable = ({ orders }) => {
     return (
         <>
+            {console.log(orders)};
             <div className="bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-xl font-semibold mb-4">Recent Orders</h2>
                 <div className="overflow-scroll sm:overflow-hidden">
@@ -19,10 +20,10 @@ const RecentOrdersTable = ({orders}) => {
                         <tbody>
                             {orders.map((order) => (
                                 <tr key={order.id} className="border-b">
-                                    <td className="py-2 px-4">{order.customerName}</td>
-                                    <td className="py-2 px-4">{order.item}</td>
-                                    <td className="py-2 px-4">${order.totalPrice.toFixed(2)}</td>
-                                    <td className="py-2 px-4">{order.orderDate}</td>
+                                    <td className="py-2 px-4">{order.username}</td>
+                                    <td className="py-2 px-4">{order.itemToPurchase}</td>
+                                    <td className="py-2 px-4">${order.totalCost}</td>
+                                    <td className="py-2 px-4">{new Date(order.date).toLocaleString()}</td>
                                     <td className="py-2 px-4">{order.status}</td>
                                 </tr>
                             ))}
