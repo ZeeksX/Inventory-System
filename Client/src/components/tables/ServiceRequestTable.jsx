@@ -13,6 +13,7 @@ const ServiceRequestTable = ({serviceRequests}) => {
                                 <th className="py-2 px-4 text-left">Phone Model</th>
                                 <th className="py-2 px-4 text-left">Issue</th>
                                 <th className="py-2 px-4 text-left">Date</th>
+                                <th className="py-2 px-4 text-left">Status</th>
                             </tr>
                         </thead>
                         <tbody>

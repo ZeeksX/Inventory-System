@@ -3,7 +3,6 @@ import React from 'react'
 const RecentOrdersTable = ({ orders }) => {
     return (
         <>
-            {console.log(orders)};
             <div className="bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-xl font-semibold mb-4">Recent Orders</h2>
                 <div className="overflow-scroll sm:overflow-hidden">
