@@ -6,12 +6,15 @@ import Brand from "../components/brand/Brand";
 import RequestService from "../components/modals/RequestService";
 import RegistrationModal from '../components/modals/RegistrationModal';
 import PurchaseProduct from "../components/modals/PurchaseProduct";
+import LoginUser from '../components/LoginUser';
 
-const Request = ({ sidebarOpen, toggleSidebar }) => {
+const Request = () => {
   const [item, setItem] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [open, setOpen] = useState(false);
+  const navItems = ["Home", "About", "Contact"];
   const [newRequest, setNewRequest] = useState({
     customerName: '',
     customerEmail: '',
@@ -21,18 +24,9 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
   });
   const [modalOpen, setModalOpen] = useState(false);
   const [formType, setFormType] = useState('');
-  const [isRegistered, setIsRegistered] = useState(false); // New state for registration
-
-  const handleChange = (event) => {
-    setItem(event.target.value);
-  };
-
-  const navItems = ["Home", "About", "Contact"];
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewRequest({ ...newRequest, [name]: value });
-  };
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [totalCost, setTotalCost] = useState(0); // New state for total cost
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -44,19 +38,22 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
   };
 
   const handleRegistrationSuccess = () => {
-    setIsRegistered(true); // Update registration state on success
-    setOpen(false); // Close registration modal
+    setIsRegistered(true);
+    setOpen(false);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = {
-      customerName: username,
-      customerEmail: email,
+      username: username,
+      email: email,
       phoneNumber: newRequest.phoneNumber,
-      item: item,
-      totalPrice: 200.00,
+      itemToPurchase: item,
+      quantity: quantity,
+      totalCost: totalCost, // Include total cost
     };
+
+    console.log('Data being sent for purchase:', data);
 
     try {
       const response = await fetch('http://localhost:3000/api/v1/request/purchase', {
@@ -66,50 +63,56 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
         },
         body: JSON.stringify(data),
       });
-
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
 
       const result = await response.json();
-      console.log('Success:', result);
+      console.log('Purchase Success:', result);
       setModalOpen(false);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  const handleSubmitService = async (e) => {
-    e.preventDefault();
-    if (
-      newRequest.customerName &&
-      newRequest.customerEmail &&
-      newRequest.phoneNumber &&
-      newRequest.phoneModel &&
-      newRequest.issueDescription
-    ) {
-      try {
-        const response = await fetch('http://localhost:3000/api/v1/request/service', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(newRequest),
-        });
+  const handleSubmitService = async (event) => {
+    event.preventDefault();
+    const serviceData = {
+      customerName: newRequest.customerName,
+      customerEmail: newRequest.customerEmail,
+      phoneNumber: newRequest.phoneNumber,
+      phoneModel: newRequest.phoneModel,
+      issueDescription: newRequest.issueDescription,
+    };
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+    console.log('Data being sent for service request:', serviceData);
 
-        const result = await response.json();
-        console.log('Service Request Success:', result);
-        closeModal();
-      } catch (error) {
-        console.error('Error:', error);
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/request/service', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(serviceData),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
-    } else {
-      console.error('All fields are required');
+
+      const result = await response.json();
+      console.log('Service Request Success:', result);
+      setModalOpen(false);
+    } catch (error) {
+      console.error('Error:', error);
     }
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewRequest((prevRequest) => ({
+      ...prevRequest,
+      [name]: value,
+    }));
   };
 
   const openModal = (type) => {
@@ -120,12 +123,18 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
   const closeModal = () => {
     setModalOpen(false);
     setNewRequest({ customerName: '', customerEmail: '', phoneNumber: '', phoneModel: '', issueDescription: '' });
+    setQuantity(1);
+    setTotalCost(0); // Reset total cost when closing modal
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
   };
 
   return (
     <>
       <div className="flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
-        <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb-4">
+        <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb- 4">
           <div className="hidden lg:flex flex-row items-center w-full h-8 justify-between">
             <Brand />
             <div className="flex flex-row gap-8 justify-between">
@@ -145,29 +154,34 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
           </div>
         </nav>
 
-        <div className="flex flex-col items-center w-full">
-          <h2 className="text-xl font-semibold mb-4">Choose an Option</h2>
-          {isRegistered ? ( // Conditionally render based on registration state
-            <div className="flex gap-4">
-              <Button
-                variant="contained"
-                sx={{ '&:hover': { backgroundColor: 'green' } }}
-                onClick={() => openModal('purchase')}
-              >
-                Purchase an Item
-              </Button>
-              <Button
-                variant="contained"
-                sx={{ '&:hover': { backgroundColor: 'green' } }}
-                onClick={() => openModal('service')}
-              >
-                Submit a Service Request
-              </Button>
-            </div>
-          ) : (
-            <p className="text-lg">Please register to access purchase and service options.</p>
-          )}
-        </div>
+        {isLoggedIn ? (
+          <div className="flex flex-col items-center w-full">
+            <h2 className="text-xl font-semibold mb-4">Choose an Option</h2>
+            {isRegistered || isLoggedIn ? (
+              <div className="flex gap-4">
+                <Button
+                  variant="contained"
+                  sx={{ '&:hover': { backgroundColor: 'green' } }}
+                  onClick={() => openModal('purchase')}
+                >
+                  Purchase an Item
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{ '&:hover': { backgroundColor: 'green' } }}
+                  onClick={() => openModal('service')}
+                >
+                  Submit a Service Request
+                </Button>
+              </div>
+            ) : (
+              <p className="text-lg">Please register to access purchase and service options.</p>
+            )}
+          </div>
+        ) : (
+          <LoginUser onSuccess={handleLoginSuccess} />
+        )}
+
         <Modal open={modalOpen} onClose={closeModal}>
           <Box sx={{
             position: 'absolute',
@@ -184,11 +198,15 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
               <PurchaseProduct
                 username={username}
                 email={email}
-                item={item}
+                itemToPurchase={item}
+                quantity={quantity}
                 setUsername={setUsername}
                 setEmail={setEmail}
                 setItem={setItem}
+                setQuantity={setQuantity}
                 handleSubmit={handleSubmit}
+                totalCost={totalCost}
+                setTotalCost={setTotalCost} // Pass setTotalCost to update total cost
               />
             ) : (
               <RequestService
@@ -204,6 +222,6 @@ const Request = ({ sidebarOpen, toggleSidebar }) => {
       </div>
     </>
   );
-}
+};
 
 export default Request;

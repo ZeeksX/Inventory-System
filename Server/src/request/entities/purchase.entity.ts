@@ -20,4 +20,10 @@ export class Purchase {
 
   @Column()
   quantity: number;
+
+  @Column()
+  totalCost: number;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  date: Date;
 }
