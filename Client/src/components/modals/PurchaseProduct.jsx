@@ -14,7 +14,10 @@ const PurchaseProduct = ({
     setUsername,
     setEmail,
     setItem,
+    setQuantity,
     handleSubmit,
+    totalCost,
+    setTotalCost // New prop for setting total cost
 }) => {
     const [inventory, setInventory] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -56,11 +59,23 @@ const PurchaseProduct = ({
         const selectedItem = e.target.value;
         setItem(selectedItem);
         checkInventory(selectedItem);
+
+        // Update the price and total cost based on selected item
+        const product = inventory.find(item => item.name === selectedItem);
+        if (product) {
+            setTotalCost(quantity * product.price); // Update total cost
+        }
     };
 
     const handleQuantityChange = (e) => {
         const value = Math.max(1, parseInt(e.target.value, 10) || 1);
         setQuantity(value); // Update quantity state in parent
+
+        // Update the total cost based on new quantity
+        const product = inventory.find(item => item.name === itemToPurchase);
+        if (product) {
+            setTotalCost(value * product.price); // Update total cost
+        }
     };
 
     return (
@@ -114,11 +129,11 @@ const PurchaseProduct = ({
             {inventoryMessage && <p>{inventoryMessage}</p>}
             <FormControl fullWidth variant="outlined">
                 <TextField
-                    label="Quantity"
+                    label=" Quantity"
                     type="number"
                     value={quantity}
                     onChange={handleQuantityChange}
-                    slotProps={{
+                    inputProps={{
                         min: 1,
                         max: itemToPurchase ? inventory.find(product => product.name === itemToPurchase)?.stock : undefined,
                     }}
@@ -127,6 +142,7 @@ const PurchaseProduct = ({
                     }
                 />
             </FormControl>
+            <p>Total Cost: ${totalCost.toFixed(2)}</p> {/* Display total cost */}
             <div className="flex flex-row justify-between gap-4 items-center w-full">
                 <Button
                     variant="contained"

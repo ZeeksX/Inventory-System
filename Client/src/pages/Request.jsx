@@ -25,17 +25,7 @@ const Request = () => {
   const [formType, setFormType] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const handleChange = (event) => {
-    setItem(event.target.value);
-  };
-
-  const navItems = ["Home", "About", "Contact"];
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewRequest({ ...newRequest, [name]: value });
-  };
+  const [totalCost, setTotalCost] = useState(0); // New state for total cost
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -47,9 +37,10 @@ const Request = () => {
   };
 
   const handleRegistrationSuccess = () => {
-    setIsRegistered(true); // Update registration state on success
-    setOpen(false); // Close registration modal
+    setIsRegistered(true);
+    setOpen(false);
   };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = {
@@ -58,9 +49,10 @@ const Request = () => {
       phoneNumber: newRequest.phoneNumber,
       itemToPurchase: item,
       quantity: quantity,
+      totalCost: totalCost, // Include total cost
     };
 
-    console.log('Data being sent:', data); // Log the data
+    console.log('Data being sent:', data);
 
     try {
       const response = await fetch('http://localhost:3000/api/v1/request/purchase', {
@@ -81,38 +73,6 @@ const Request = () => {
       console.error('Error:', error);
     }
   };
-  const handleSubmitService = async (e) => {
-    e.preventDefault();
-    if (
-      newRequest.customerName &&
-      newRequest.customerEmail &&
-      newRequest.phoneNumber &&
-      newRequest.phoneModel &&
-      newRequest.issueDescription
-    ) {
-      try {
-        const response = await fetch('http://localhost:3000/api/v1/request/service', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(newRequest),
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const result = await response.json();
-        console.log('Service Request Success:', result);
-        closeModal();
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    } else {
-      console.error('All fields are required');
-    }
-  };
 
   const openModal = (type) => {
     setFormType(type);
@@ -122,17 +82,18 @@ const Request = () => {
   const closeModal = () => {
     setModalOpen(false);
     setNewRequest({ customerName: '', customerEmail: '', phoneNumber: '', phoneModel: '', issueDescription: '' });
-    setQuantity(1); // Reset quantity when closing modal
+    setQuantity(1);
+    setTotalCost(0); // Reset total cost when closing modal
   };
 
   const handleLoginSuccess = () => {
-    setIsLoggedIn(true); // Update login status on successful login
+    setIsLoggedIn(true);
   };
 
   return (
     <>
       <div className="flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
-        <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb-4">
+        <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb- 4">
           <div className="hidden lg:flex flex-row items-center w-full h-8 justify-between">
             <Brand />
             <div className="flex flex-row gap-8 justify-between">
@@ -177,7 +138,7 @@ const Request = () => {
             )}
           </div>
         ) : (
-          <LoginUser onSuccess={handleLoginSuccess} /> // Render the Login component if not logged in
+          <LoginUser onSuccess={handleLoginSuccess} />
         )}
 
         <Modal open={modalOpen} onClose={closeModal}>
@@ -197,11 +158,14 @@ const Request = () => {
                 username={username}
                 email={email}
                 itemToPurchase={item}
-                quantity={quantity} // Pass quantity to PurchaseProduct
+                quantity={quantity}
                 setUsername={setUsername}
                 setEmail={setEmail}
                 setItem={setItem}
+                setQuantity={setQuantity}
                 handleSubmit={handleSubmit}
+                totalCost={totalCost}
+                setTotalCost={setTotalCost} // Pass setTotalCost to update total cost
               />
             ) : (
               <RequestService
@@ -217,6 +181,6 @@ const Request = () => {
       </div>
     </>
   );
-}
+};
 
 export default Request;

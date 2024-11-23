@@ -20,4 +20,7 @@ export class Purchase {
 
   @Column()
   quantity: number;
+
+  @Column()
+  totalCost: number;
 }
