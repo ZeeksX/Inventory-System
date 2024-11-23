@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { AuthProvider } from '../components/Auth';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
 import TopNav from '../components/topnav/TopNav';
+import ServiceRequestTable from '../components/tables/ServiceRequestTable';
+import RecentOrdersTable from "../components/tables/RecentOrdersTable";
 
 const Service = ({ toggleSidebar, sidebarOpen }) => {
   const [serviceRequests, setServiceRequests] = useState([]);
@@ -137,59 +139,9 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
           </div>
 
           {/* Service Requests Table */}
-          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h2 className="text-xl font-semibold mb-4">Recent Service Requests</h2>
-            <div className="overflow-scroll sm:overflow-hidden">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="py-2 px-4 text-left">Customer Name</th>
-                    <th className="py-2 px-4 text-left">Phone Model</th>
-                    <th className="py-2 px-4 text-left">Issue</th>
-                    <th className="py-2 px-4 text-left">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {serviceRequests.map((request) => (
-                    <tr key={request.id} className="border-b">
-                      <td className="py-2 px-4">{request.customerName}</td>
-                      <td className="py-2 px-4">{request.phoneModel}</td>
-                      <td className="py-2 px-4">{request.issueDescription}</td>
-                      <td className="py-2 px-4">{new Date(request.date).toLocaleString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <ServiceRequestTable serviceRequests={serviceRequests}/>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Recent Orders</h2>
-            <div className="overflow-scroll sm:overflow-hidden">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="py-2 px-4 text-left">Customer Name</th>
-                    <th className="py-2 px-4 text-left">Item</th>
-                    <th className="py-2 px-4 text-left">Total Price</th>
-                    <th className="py-2 px-4 text-left">Order Date</th>
-                    <th className="py-2 px-4 text-left">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order) => (
-                    <tr key={order.id} className="border-b">
-                      <td className="py-2 px-4">{order.customerName}</td>
-                      <td className="py-2 px-4">{order.item}</td>
-                      <td className="py-2 px-4">${order.totalPrice.toFixed(2)}</td>
-                      <td className="py-2 px-4">{order.orderDate}</td>
-                      <td className="py-2 px-4">{order.status}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <RecentOrdersTable orders={orders}/>
         </div>
       </div>
     </AuthProvider>

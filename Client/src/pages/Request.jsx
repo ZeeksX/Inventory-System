@@ -14,6 +14,7 @@ const Request = () => {
   const [email, setEmail] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [open, setOpen] = useState(false);
+  const navItems = ["Home", "About", "Contact"];
   const [newRequest, setNewRequest] = useState({
     customerName: '',
     customerEmail: '',
@@ -52,7 +53,7 @@ const Request = () => {
       totalCost: totalCost, // Include total cost
     };
 
-    console.log('Data being sent:', data);
+    console.log('Data being sent for purchase:', data);
 
     try {
       const response = await fetch('http://localhost:3000/api/v1/request/purchase', {
@@ -67,11 +68,51 @@ const Request = () => {
       }
 
       const result = await response.json();
-      console.log('Success:', result);
+      console.log('Purchase Success:', result);
       setModalOpen(false);
     } catch (error) {
       console.error('Error:', error);
     }
+  };
+
+  const handleSubmitService = async (event) => {
+    event.preventDefault();
+    const serviceData = {
+      customerName: newRequest.customerName,
+      customerEmail: newRequest.customerEmail,
+      phoneNumber: newRequest.phoneNumber,
+      phoneModel: newRequest.phoneModel,
+      issueDescription: newRequest.issueDescription,
+    };
+
+    console.log('Data being sent for service request:', serviceData);
+
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/request/service', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(serviceData),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const result = await response.json();
+      console.log('Service Request Success:', result);
+      setModalOpen(false);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewRequest((prevRequest) => ({
+      ...prevRequest,
+      [name]: value,
+    }));
   };
 
   const openModal = (type) => {
