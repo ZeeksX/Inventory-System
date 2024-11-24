@@ -1,19 +1,65 @@
-import React, { useState } from 'react';
-import SidebarWithRoleControl from '../components/SidebarWithRoleControl'; // Import the SidebarWithRoleControl
+import React, { useEffect, useState } from 'react';
+import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
 import { AuthProvider } from '../components/Auth';
 import TopNav from '../components/topnav/TopNav';
 
 const Sales = ({ sidebarOpen, toggleSidebar }) => {
-  // Sample sales data
-  const [sales, setSales] = useState([
-    { id: 1, model: 'iPhone 13', price: 799, quantity: 1, date: '2023-10-01' },
-    { id: 2, model: 'Samsung Galaxy S21', price: 699, quantity: 2, date: '2023-10-02' },
-    { id: 3, model: 'Google Pixel 6', price: 599, quantity: 1, date: '2023-10-03' },
-    { id: 4, model: 'OnePlus 9', price: 729, quantity: 1, date: '2023-10-04' },
-  ]);
+  const [sales, setSales] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [totalSales, setTotalSales] = useState(0);
+  const [totalQuantity, setTotalQuantity] = useState(0);
 
-  const totalSales = sales.reduce((acc, sale) => acc + sale.price * sale.quantity, 0);
-  const totalQuantity = sales.reduce((acc, sale) => acc + sale.quantity, 0);
+  useEffect(() => {
+    const fetchSalesData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/request/purchase');
+        if (!response.ok) {
+          throw new Error('Failed to fetch sales data');
+        }
+        const data = await response.json();
+        setSales(data);
+      } catch (error) {
+        console.error('Error fetching sales data:', error);
+      }
+    };
+
+    const fetchProductsData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/products');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products data');
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching products data:', error);
+      }
+    };
+
+    fetchSalesData();
+    fetchProductsData();
+  }, []);
+
+  useEffect(() => {
+    if (sales.length > 0 && products.length > 0) {
+      calculateTotals();
+    }
+  }, [sales, products]);
+
+  const getPriceByItemName = (itemName) => {
+    const product = products.find(product => product.name === itemName);
+    return product ? product.price : 0;
+  };
+
+  const calculateTotals = () => {
+    const total = sales.reduce((acc, sale) => {
+      const price = getPriceByItemName(sale.itemToPurchase);
+      return acc + (price * sale.quantity);
+    }, 0);
+    const quantity = sales.reduce((acc, sale) => acc + sale.quantity, 0);
+    setTotalSales(total);
+    setTotalQuantity(quantity);
+  };
 
   return (
     <AuthProvider>
@@ -43,14 +89,17 @@ const Sales = ({ sidebarOpen, toggleSidebar }) => {
                 </tr>
               </thead>
               <tbody>
-                {sales.map(sale => (
-                  <tr key={sale.id} className="border-b">
-                    <td className="py-2 px-2 sm:px-4">{sale.model}</td>
-                    <td className="py-2 px-2 sm:px-4">${sale.price}</td>
-                    <td className="py-2 px-2 sm:px-4">{sale.quantity}</td>
-                    <td className="py-2 px-2 sm:px-4">{sale.date}</td>
-                  </tr>
-                ))}
+                {sales.map(sale => {
+                  const price = getPriceByItemName(sale.itemToPurchase); // Get the price for each sale
+                  return (
+                    <tr key={sale.id} className="border-b">
+                      <td className="py-2 px-2 sm:px-4">{sale.itemToPurchase}</td>
+                      <td className="py-2 px-2 sm:px-4">${price}</td>
+                      <td className="py-2 px-2 sm:px-4">{sale.quantity}</td>
+                      <td className="py-2 px-2 sm:px-4">{new Date(sale.date).toLocaleString()}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
