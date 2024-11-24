@@ -14,7 +14,7 @@ import { ServiceRequest } from './entities/service-request.entity';
 
 @Controller('request')
 export class RequestController {
-  constructor(private readonly requestService: RequestService) { }
+  constructor(private readonly requestService: RequestService) {}
 
   @Post('purchase')
   async purchase(@Body() purchaseData: Partial<Purchase>) {
@@ -46,7 +46,10 @@ export class RequestController {
     @Body() updateData: { status: string },
   ) {
     try {
-      return await this.requestService.updatePurchaseStatus(id, updateData.status);
+      return await this.requestService.updatePurchaseStatus(
+        id,
+        updateData.status,
+      );
     } catch (error) {
       throw new HttpException(
         `Error updating purchase: ${error.message}`,
@@ -85,7 +88,10 @@ export class RequestController {
     @Body() updateData: { status: string },
   ) {
     try {
-      return await this.requestService.updateServiceRequestStatus(id, updateData.status);
+      return await this.requestService.updateServiceRequestStatus(
+        id,
+        updateData.status,
+      );
     } catch (error) {
       throw new HttpException(
         `Error updating service request: ${error.message}`,

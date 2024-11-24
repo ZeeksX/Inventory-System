@@ -1,5 +1,6 @@
 // service-request.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Customer } from 'src/customer/entities/customer.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 @Entity()
 export class ServiceRequest {
@@ -20,4 +21,7 @@ export class ServiceRequest {
 
   @Column({ default: 'pending' }) // Default status is 'pending'
   status: string;
+
+  @ManyToOne(() => Customer, (customer) => customer.serviceRequests)
+  customer: Customer; // Many-to-One relationship with Customer
 }
