@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Entity,
   Column,
@@ -24,8 +25,8 @@ export class Product {
   @Column()
   stock: number; // Current stock level of the product
 
-  @ManyToOne(() => Category, (category) => category.products)
-  category: Category; // Relationship to the Category entity
+  // @ManyToOne(() => Category, (category) => category.products)
+  // category: Category; // Relationship to the Category entity
 
   @ManyToOne(() => Supplier, (supplier) => supplier.products)
   supplier: Supplier; // Relationship to the Supplier entity
