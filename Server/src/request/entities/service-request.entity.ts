@@ -9,12 +9,6 @@ export class ServiceRequest {
   @Column()
   customerName: string;
 
-  // @Column()
-  // customerEmail: string;
-
-  // @Column()
-  // phoneNumber: string;
-
   @Column()
   phoneModel: string;
 
@@ -23,4 +17,7 @@ export class ServiceRequest {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date: Date;
+
+  @Column({ default: 'pending' }) // Default status is 'pending'
+  status: string; 
 }

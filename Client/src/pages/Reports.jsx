@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
 import TopNav from '../components/topnav/TopNav';
 import { AuthProvider } from '../components/Auth';
@@ -7,34 +7,89 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const Reports = ({ toggleSidebar, sidebarOpen }) => {
-  // Sample data for sales, orders, and services
-  const [sales, setSales] = useState([
-    { id: 1, model: 'iPhone 13', price: 799, quantity: 1, date: '2023-10-01' },
-    { id: 2, model: 'Samsung Galaxy S21', price: 699, quantity: 2, date: '2023-10-02' },
-  ]);
-
-  const [orders, setOrders] = useState([
-    { id: 1, orderId: 'ORD001', customer: 'John Doe', total: 799, date: '2023-10-01' },
-    { id: 2, orderId: 'ORD002', customer: 'Jane Smith', total: 1398, date: '2023-10-02' },
-  ]);
-
-  const [services, setServices] = useState([
-    { id: 1, serviceId: 'SRV001', customer: 'Alice Johnson', service: 'Screen Replacement', date: '2023-10-01' },
-    { id: 2, serviceId: 'SRV002', customer: 'Bob Brown', service: 'Battery Replacement', date: '2023-10-02' },
-  ]);
+  const [sales, setSales] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [services, setServices] = useState([]);
+  const [products, setProducts] = useState([]); // New state for products
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [activeTab, setActiveTab] = useState('sales');
 
+  // Fetch data from the API
+  useEffect(() => {
+    const fetchSalesData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/request/purchase');
+        if (!response.ok) {
+          throw new Error('Failed to fetch sales data');
+        }
+        const data = await response.json();
+        setSales(data);
+      } catch (error) {
+        console.error('Error fetching sales data:', error);
+      }
+    };
+
+    const fetchOrdersData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/request/purchase');
+        if (!response.ok) {
+          throw new Error('Failed to fetch orders data');
+        }
+        const data = await response.json();
+        setOrders(data);
+      } catch (error) {
+        console.error('Error fetching orders data:', error);
+      }
+    };
+
+    const fetchServicesData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/request/service');
+        if (!response.ok) {
+          throw new Error('Failed to fetch services data');
+        }
+        const data = await response.json();
+        setServices(data);
+      } catch (error) {
+        console.error('Error fetching services data:', error);
+      }
+    };
+
+    const fetchProductsData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/products');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products data');
+        }
+        const data = await response.json();
+        setProducts(data); // Store products in state
+      } catch (error) {
+        console.error('Error fetching products data:', error);
+      }
+    };
+
+    fetchSalesData();
+    fetchOrdersData();
+    fetchServicesData();
+    fetchProductsData(); // Fetch products data
+  }, []);
+
   // Filter functions
   const filterData = (data) => {
     return data.filter(item => {
-      const itemDate = new Date(item.date);
+      const itemDate = new Date(item.date).toLocaleString();
       const isAfterStart = !startDate || itemDate >= startDate;
       const isBeforeEnd = !endDate || itemDate <= endDate;
       return isAfterStart && isBeforeEnd;
     });
+  };
+
+  // Function to get price by model name
+  const getPriceByModel = (model) => {
+    const product = products.find(product => product.name === model);
+    return product ? product.price : 0; // Return price or 0 if not found
   };
 
   // PDF Document components
@@ -44,10 +99,10 @@ const Reports = ({ toggleSidebar, sidebarOpen }) => {
         <Text style={{ fontSize: 24, marginBottom: 20 }}>Sales Report</Text>
         {filterData(sales).map(sale => (
           <View key={sale.id} style={{ marginBottom: 10 }}>
-            <Text>Model: {sale.model}</Text>
-            <Text>Price: ${sale.price}</Text>
+            <Text>Model: {sale.itemToPurchase}</Text>
+            <Text>Price: ${getPriceByModel(sale.itemToPurchase)}</Text>
             <Text>Quantity: {sale.quantity}</Text>
-            <Text>Date: {sale.date}</Text>
+            <Text>Date: {new Date(sale.date).toLocaleString()}</Text>
           </View>
         ))}
       </Page>
@@ -62,8 +117,9 @@ const Reports = ({ toggleSidebar, sidebarOpen }) => {
           <View key={order.id} style={{ marginBottom: 10 }}>
             <Text>Order ID: {order.orderId}</Text>
             <Text>Customer: {order.customer}</Text>
-            <Text>Total: ${order.total}</Text>
-            <Text>Date: {order.date}</Text>
+            <Text>Item Bought: {order.itemToPurchase}</Text>
+            <Text>Total: ${order.totalCost}</Text>
+            <Text>Date: {new Date(order.date).toLocaleString()}</Text>
           </View>
         ))}
       </Page>
@@ -77,9 +133,9 @@ const Reports = ({ toggleSidebar, sidebarOpen }) => {
         {filterData(services).map(service => (
           <View key={service.id} style={{ marginBottom: 10 }}>
             <Text>Service ID: {service.serviceId}</Text>
-            <Text>Customer: {service.customer}</Text>
-            <Text>Service: {service.service}</Text>
-            <Text>Date: {service.date}</Text>
+            <Text>Customer: {service.customerName}</Text>
+            <Text>Service: {service.issueDescription}</Text>
+            <Text>Date: {new Date(service.date).toLocaleString()}</Text>
           </View>
         ))}
       </Page>
@@ -146,10 +202,10 @@ const Reports = ({ toggleSidebar, sidebarOpen }) => {
                   <tbody>
                     {filterData(sales).map(sale => (
                       <tr key={sale.id} className="border-b">
-                        <td className="py-2 px-4">{sale.model}</td>
-                        <td className="py-2 px-4">${sale.price}</td>
+                        <td className="py-2 px-4">{sale.itemToPurchase}</td>
+                        <td className="py-2 px-4">${getPriceByModel(sale.itemToPurchase)}</td>
                         <td className="py-2 px-4">{sale.quantity}</td>
-                        <td className="py-2 px-4">{sale.date}</td>
+                        <td className="py-2 px-4">{new Date(sale.date).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -170,6 +226,7 @@ const Reports = ({ toggleSidebar, sidebarOpen }) => {
                     <tr className="bg-gray-200">
                       <th className="py-2 px-4 text-left">Order ID</th>
                       <th className="py-2 px-4 text-left">Customer</th>
+                      <th className="py-2 px-4 text-left">Item Bought</th>
                       <th className="py-2 px-4 text-left">Total</th>
                       <th className="py-2 px-4 text-left">Date</th>
                     </tr>
@@ -177,10 +234,11 @@ const Reports = ({ toggleSidebar, sidebarOpen }) => {
                   <tbody>
                     {filterData(orders).map(order => (
                       <tr key={order.id} className="border-b">
-                        <td className="py-2 px-4">{order.orderId}</td>
-                        <td className="py-2 px-4">{order.customer}</td>
-                        <td className="py-2 px-4">${order.total}</td>
-                        <td className="py-2 px-4">{order.date}</td>
+                        <td className="py-2 px-4">ORD{order.id}</td>
+                        <td className="py-2 px-4">{order.username}</td>
+                        <td className="py-2 px-4">{order.itemToPurchase}</td>
+                        <td className="py-2 px-4">${order.totalCost}</td>
+                        <td className="py-2 px-4">{new Date(order.date).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -195,7 +253,7 @@ const Reports = ({ toggleSidebar, sidebarOpen }) => {
                 {({ loading }) => (loading ? 'Loading document...' : 'Download Service Report')}
               </PDFDownloadLink>
               <div className="mt-6">
-                <h2 className="text-xl font-semibold mb-4">Filtered Service Data </h2>
+                <h2 className="text-xl font-semibold mb-4">Filtered Service Data</h2>
                 <table className="min-w-full bg-white border border-gray-300">
                   <thead>
                     <tr className="bg-gray-200">
@@ -208,10 +266,10 @@ const Reports = ({ toggleSidebar, sidebarOpen }) => {
                   <tbody>
                     {filterData(services).map(service => (
                       <tr key={service.id} className="border-b">
-                        <td className="py-2 px-4">{service.serviceId}</td>
-                        <td className="py-2 px-4">{service.customer}</td>
-                        <td className="py-2 px-4">{service.service}</td>
-                        <td className="py-2 px-4">{service.date}</td>
+                        <td className="py-2 px-4">SERV{service.id}</td>
+                        <td className="py-2 px-4">{service.customerName}</td>
+                        <td className="py-2 px-4">{service.issueDescription}</td>
+                        <td className="py-2 px-4">{new Date(service.date).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
