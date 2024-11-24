@@ -26,7 +26,7 @@ export class Purchase {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date: Date;
-  
+
   @Column({ default: 'pending' }) // Default status is 'pending'
-  status: string; 
+  status: string;
 }

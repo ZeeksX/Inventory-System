@@ -19,5 +19,5 @@ export class ServiceRequest {
   date: Date;
 
   @Column({ default: 'pending' }) // Default status is 'pending'
-  status: string; 
+  status: string;
 }
