@@ -13,6 +13,7 @@ const Request = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [phoneNumber, setPhoneNumber] = useState(''); // Add phone number state
   const [open, setOpen] = useState(false);
   const navItems = ["Home", "About", "Contact"];
   const [newRequest, setNewRequest] = useState({
@@ -44,14 +45,22 @@ const Request = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Construct data object with all necessary fields
     const data = {
-      username: username,
-      email: email,
-      phoneNumber: newRequest.phoneNumber,
+      username,
+      email,
+      phoneNumber, // Include phone number
       itemToPurchase: item,
-      quantity: quantity,
-      totalCost: totalCost, // Include total cost
+      quantity,
+      totalCost, // Include total cost
     };
+
+    // Check if all required fields are filled
+    if (!username || !email || !phoneNumber || !item || quantity < 1) {
+      alert('Please fill out all required fields.');
+      return; // Prevent submission if fields are empty
+    }
 
     console.log('Data being sent for purchase:', data);
 
@@ -125,6 +134,10 @@ const Request = () => {
     setNewRequest({ customerName: '', customerEmail: '', phoneNumber: '', phoneModel: '', issueDescription: '' });
     setQuantity(1);
     setTotalCost(0); // Reset total cost when closing modal
+    setUsername(''); // Reset username
+    setEmail(''); // Reset email
+    setPhoneNumber(''); // Reset phone number
+    setItem(''); // Reset item
   };
 
   const handleLoginSuccess = () => {
@@ -133,20 +146,10 @@ const Request = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-12 p-4 w-full min-h-screen bg-[#f4f4f4]">
-        <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb- 4">
-          <div className="hidden lg:flex flex-row items-center w-full h-8 justify-between">
+      <div className="flex flex-col items-center lg:justify-normal justify-center gap-2 lg:gap-8 p-4 w-full min-h-screen bg-[#f4f4f4]">
+        <nav className="flex flex-col w-full p-2 lg:p-8 mb-0 lg:mb-4">
+          <div className="hidden lg:flex flex-row items-center w-full h-8 justify-center">
             <Brand />
-            <div className="flex flex-row gap-8 justify-between">
-              <ul className="flex flex-row gap-8">
-                {navItems.map((item) => (
-                  <li key={item} className="text-[black] hover:text-[darkgrey] text-xl cursor-pointer">{item}</li>
-                ))}
-              </ul>
-              <button onClick={handleClickOpen} className="rounded bg-blue-700 text-xl hover:bg-[green] text-white py-1 px-3 border border-transparent transition-all focus:outline-none focus:ring-2">
-                Register
-              </button>
-            </div>
           </div>
 
           <div className="lg:hidden flex justify-center items-center p-2">
@@ -200,10 +203,12 @@ const Request = () => {
                 email={email}
                 itemToPurchase={item}
                 quantity={quantity}
+                phoneNumber={phoneNumber} // Pass phone number to PurchaseProduct
                 setUsername={setUsername}
                 setEmail={setEmail}
                 setItem={setItem}
                 setQuantity={setQuantity}
+                setPhoneNumber={setPhoneNumber} // Pass setPhoneNumber to update phone number
                 handleSubmit={handleSubmit}
                 totalCost={totalCost}
                 setTotalCost={setTotalCost} // Pass setTotalCost to update total cost
