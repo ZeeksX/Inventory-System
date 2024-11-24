@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { AuthProvider } from '../components/Auth';
 import SidebarWithRoleControl from '../components/SidebarWithRoleControl';
@@ -17,7 +16,6 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
   const [feedback, setFeedback] = useState({ message: '', type: '' });
 
   useEffect(() => {
-    // Fetch service requests and orders from the backend
     const fetchServiceRequests = async () => {
       try {
         const response = await fetch('http://localhost:3000/api/v1/request/service');
@@ -84,6 +82,48 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
     }
   };
 
+  const handleUpdateStatus = async (id, newStatus, isOrder = false) => {
+    const endpoint = isOrder
+      ? `http://localhost:3000/api/v1/request/purchase/${id}`
+      : `http://localhost:3000/api/v1/request/service/${id}`;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }), // Send the new status
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update status');
+      }
+
+      const updatedRequest = await response.json();
+
+      if (isOrder) {
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order.id === updatedRequest.id ? updatedRequest : order
+          )
+        );
+      } else {
+        setServiceRequests((prevRequests) =>
+          prevRequests.map((request) =>
+            request.id === updatedRequest.id ? updatedRequest : request
+          )
+        );
+      }
+
+      setFeedback({ message: 'Status updated successfully!', type: 'success' });
+    } catch (error) {
+      console.error('Error updating status:', error);
+      setFeedback({ message: error.message || 'Error updating status', type: 'error' });
+    }
+  };
+
   return (
     <AuthProvider>
       <div className="home-page flex flex-col sm:flex-row w-full min-h-screen">
@@ -139,9 +179,15 @@ const Service = ({ toggleSidebar, sidebarOpen }) => {
           </div>
 
           {/* Service Requests Table */}
-          <ServiceRequestTable serviceRequests={serviceRequests} />
+          <ServiceRequestTable
+            serviceRequests={serviceRequests}
+            onUpdateStatus={(id, newStatus) => handleUpdateStatus(id, newStatus, false)} // Pass the function here
+          />
 
-          <RecentOrdersTable orders={orders} />
+          <RecentOrdersTable
+            orders={orders}
+            onUpdateStatus={(id, newStatus) => handleUpdateStatus(id, newStatus, true)} // Pass the function here
+          />
         </div>
       </div>
     </AuthProvider>

@@ -13,7 +13,7 @@ export class RequestService {
 
     @InjectRepository(ServiceRequest)
     private readonly serviceRequestRepository: Repository<ServiceRequest>,
-  ) {}
+  ) { }
 
   // Create a new purchase
   async createPurchase(purchaseData: Partial<Purchase>): Promise<Purchase> {
@@ -43,5 +43,35 @@ export class RequestService {
   // Find all service requests
   async findAllServiceRequests(): Promise<ServiceRequest[]> {
     return this.serviceRequestRepository.find();
+  }
+  // In request.service.ts
+  async updatePurchaseStatus(id: number, status: string): Promise<Purchase> {
+    try {
+      const purchase = await this.purchaseRepository.findOne({ where: { id } });
+      if (!purchase) {
+        throw new HttpException('Purchase not found', HttpStatus.NOT_FOUND);
+      }
+
+      purchase.status = status; // Update the status
+      return await this.purchaseRepository.save(purchase); // Save the updated purchase
+    } catch (error) {
+      throw new HttpException(`Error updating purchase: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  // Update the status of a service request
+  async updateServiceRequestStatus(id: number, status: string): Promise<ServiceRequest> {
+    try {
+      // Use an object with the id property to find the service request
+      const serviceRequest = await this.serviceRequestRepository.findOne({ where: { id } });
+
+      if (!serviceRequest) {
+        throw new HttpException('Service request not found', HttpStatus.NOT_FOUND);
+      }
+
+      serviceRequest.status = status; // Update the status
+      return await this.serviceRequestRepository.save(serviceRequest); // Save the updated request
+    } catch (error) {
+      throw new HttpException(`Error updating service request: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
