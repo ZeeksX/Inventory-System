@@ -14,7 +14,7 @@ export enum OrderStatus {
   Failed = 'Failed',
 }
 
-@Entity('orders')
+@Entity()
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
@@ -42,5 +42,5 @@ export class Order {
   customer: Customer;
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
-  orderItems: OrderItem[];
+  orderItems: OrderItem[]; // Join table for Many-to-Many relationship with Products
 }
