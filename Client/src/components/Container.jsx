@@ -88,7 +88,7 @@ const Container = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         {/* Card 1: Total Sales */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold">Total Sales today</h2>
+          <h2 className="text-xl font-semibold">Total Sales</h2>
           <p className="text-2xl font-bold">${totalSales}</p>
         </div>
 
