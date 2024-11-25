@@ -15,6 +15,9 @@ export class Supplier {
   @Column()
   contactEmail: string;
 
+  @Column('text')
+  deliverySchedule: string;
+
   @Column({ nullable: true })
   phoneNumber?: string;
 

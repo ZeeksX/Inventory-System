@@ -10,6 +10,9 @@ export class CreateSupplierDto {
   @IsEmail()
   contactEmail: string;
 
+  @IsString()
+  deliverySchedule: string;
+
   @IsOptional()
   @IsString()
   phoneNumber?: string;

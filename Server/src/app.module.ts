@@ -25,6 +25,7 @@ import { RequestModule } from './request/request.module';
     CustomerModule,
     RequestModule,
     UserModule,
+    SupplierModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET, // Use the secret from the environment variable
       signOptions: { expiresIn: '60s' }, // Set token expiration time as needed
