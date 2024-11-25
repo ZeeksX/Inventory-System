@@ -1,20 +1,40 @@
-import { Entity, Column,PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Order } from '../../order/entities/order.entity';  // Adjust the path according to your project structure
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
+import { User } from '../../user/user.entity';
+import { Order } from 'src/order/entities/order.entity';
+import { Purchase } from '../../request/entities/purchase.entity';
+import { ServiceRequest } from '../../request/entities/service-request.entity';
 
-@Entity('customers')  // Specify the table name if necessary
+@Entity()
 export class Customer {
-  @PrimaryGeneratedColumn()  // Add primary key
-  id: number;  // Unique identifier for the customer
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column({ type: 'varchar', length: 255 })
-  name: string;  // Name of the customer
+  @Column()
+  name: string;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
-  email: string;  // Unique email address of the customer
+  @Column({ unique: true })
+  email: string;
 
-  @Column({ type: 'varchar', length: 15, nullable: true })
-  phone: string;  // Phone number of the customer (optional)
+  @Column({ nullable: true })
+  phone: string;
+
+  @OneToOne(() => User, { cascade: true })
+  @JoinColumn()
+  user: User; // One-to-One relationship with User
 
   @OneToMany(() => Order, (order) => order.customer)
-  orders: Order[];  // Relationship to Order entities
+  orders: Order[]; // One-to-Many relationship with Orders
+
+  @OneToMany(() => Purchase, (purchase) => purchase.customer)
+  purchases: Purchase[]; // One-to-Many relationship with Purchases
+
+  @OneToMany(() => ServiceRequest, (serviceRequest) => serviceRequest.customer)
+  serviceRequests: ServiceRequest[]; // One-to-Many relationship with ServiceRequests
 }
