@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react';
 const Container = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
-  const [totalSales, setTotalSales] = useState(0); // New state for total sales
-  const [recentActivities, setRecentActivities] = useState([]); // State for recent activities
+  const [totalSales, setTotalSales] = useState(0);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [lowStockProducts, setLowStockProducts] = useState([]); // New state for low stock products
 
   const getUsers = async () => {
     try {
@@ -13,7 +14,7 @@ const Container = () => {
       });
       if (res.ok) {
         const data = await res.json();
-        setTotalUsers(data.length); // Set total users
+        setTotalUsers(data.length);
       } else {
         console.error("Failed to fetch users:", res.statusText);
       }
@@ -29,24 +30,40 @@ const Container = () => {
       });
       if (res.ok) {
         const data = await res.json();
-        setTotalOrders(data.length); // Set total orders
+        setTotalOrders(data.length);
 
-        // Calculate total sales by summing up the totalCost of each purchase
         const total = data.reduce((sum, order) => {
-          const cost = order.totalCost || 0; // Ensure totalCost is valid
+          const cost = order.totalCost || 0;
           return sum + cost;
         }, 0);
 
-        setTotalSales(total); // Set total sales
+        setTotalSales(total);
 
-        // Update recent activities
         const activities = data.map(order => ({
           message: `User  ${order.username} made a purchase of $${order.totalCost}.`,
           date: new Date(order.date).toLocaleString(),
         }));
-        setRecentActivities(activities.slice(-5)); // Display the last 5 activities
+        setRecentActivities(activities.slice(-5));
       } else {
         console.error("Failed to fetch orders:", res.statusText);
+      }
+    } catch (error) {
+      console.error("API link not working", error);
+    }
+  };
+
+  const getProducts = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/api/v1/products", {
+        method: "GET",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // Filter products with quantity less than 10
+        const lowStock = data.filter(product => product.stock < 10);
+        setLowStockProducts(lowStock);
+      } else {
+        console.error("Failed to fetch products:", res.statusText);
       }
     } catch (error) {
       console.error("API link not working", error);
@@ -56,13 +73,13 @@ const Container = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await Promise.all([getUsers(), getOrders()]); // Fetch users and orders concurrently
+        await Promise.all([getUsers(), getOrders(), getProducts()]); // Fetch users, orders, and products concurrently
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    fetchData(); // Call the fetchData function
+    fetchData();
   }, []);
 
   return (
@@ -72,20 +89,36 @@ const Container = () => {
         {/* Card 1: Total Sales */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold">Total Sales today</h2>
-          <p className="text-2xl font-bold">${totalSales}</p> {/* Display total sales */}
+          <p className="text-2xl font-bold">${totalSales}</p>
         </div>
 
         {/* Card 2: Total Users */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold">Total Users</h2>
-          <p className="text-2xl font-bold">{totalUsers}</p> {/* Display total users */}
+          <p className="text-2xl font-bold">{totalUsers}</p>
         </div>
 
         {/* Card 3: Total Orders */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold">Total Orders</h2>
-          <p className="text-2xl font-bold">{totalOrders}</p> {/* Display total orders */}
+          <p className="text-2xl font-bold">{totalOrders}</p>
         </div>
+      </div>
+
+      {/* Low Stock Alert */}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 className="text-xl font-semibold mb-4">Low Stock Alerts</h2>
+        <ul>
+          {lowStockProducts.length > 0 ? (
+            lowStockProducts.map((product, index) => (
+              <li key={index} className="border-b py-2">
+                {product.name} - Quantity remaining: {product.stock}
+              </li>
+            ))
+          ) : (
+            <li className="py-2 text-gray-500">No low stock products.</li>
+          )}
+        </ul>
       </div>
 
       {/* Recent Activity Section */}

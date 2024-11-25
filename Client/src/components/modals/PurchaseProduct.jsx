@@ -9,12 +9,14 @@ import Button from '@mui/material/Button';
 const PurchaseProduct = ({
     username,
     email,
+    phoneNumber, // Add phoneNumber prop
     itemToPurchase,
     quantity,
     setUsername,
     setEmail,
     setItem,
     setQuantity,
+    setPhoneNumber, // Add setPhoneNumber prop
     handleSubmit,
     totalCost,
     setTotalCost // New prop for setting total cost
@@ -22,7 +24,6 @@ const PurchaseProduct = ({
     const [inventory, setInventory] = useState([]);
     const [loading, setLoading] = useState(false);
     const [inventoryMessage, setInventoryMessage] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
 
     // Fetch inventory data when the component mounts
     useEffect(() => {
@@ -78,8 +79,20 @@ const PurchaseProduct = ({
         }
     };
 
+    const handleFormSubmit = (e) => {
+        e.preventDefault(); // Prevent default form submission
+
+        // Check if all required fields are filled
+        if (!username || !email || !phoneNumber || !itemToPurchase || quantity < 1) {
+            alert('Please fill out all required fields.');
+            return; // Prevent submission if fields are empty
+        }
+
+        handleSubmit(e); // Call the original handleSubmit function
+    };
+
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
             <FormControl fullWidth variant="outlined">
                 <TextField
                     label="Username"
@@ -106,7 +119,7 @@ const PurchaseProduct = ({
                     type="tel"
                     required
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    onChange={(e) => setPhoneNumber(e.target.value)} // Ensure the phone number is set correctly
                 />
             </FormControl>
             <FormControl fullWidth variant="outlined">
@@ -125,24 +138,25 @@ const PurchaseProduct = ({
                     ))}
                 </Select>
             </FormControl>
-            {loading && <p>Loading inventory...</p>}
+            {loading && <p>Loading inventory ...</p>}
             {inventoryMessage && <p>{inventoryMessage}</p>}
             <FormControl fullWidth variant="outlined">
                 <TextField
-                    label=" Quantity"
+                    label="Quantity"
                     type="number"
                     value={quantity}
                     onChange={handleQuantityChange}
-                    inputProps={{
-                        min: 1,
-                        max: itemToPurchase ? inventory.find(product => product.name === itemToPurchase)?.stock : undefined,
-                    }}
+                    inputProps={
+                        {
+                            min: 1,
+                            max: itemToPurchase ? inventory.find(product => product.name === itemToPurchase)?.stock : undefined,
+                        }}
                     helperText={
                         itemToPurchase ? `Max available: ${inventory.find(product => product.name === itemToPurchase)?.stock || 0}` : ''
                     }
                 />
             </FormControl>
-            <p>Total Cost: ${totalCost.toFixed(2)}</p> {/* Display total cost */}
+            <p>Total Cost: ${totalCost.toFixed(2)}</p>
             <div className="flex flex-row justify-between gap-4 items-center w-full">
                 <Button
                     variant="contained"
