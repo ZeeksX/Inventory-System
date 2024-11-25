@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, FormControl, OutlinedInput, InputAdornment, IconButton, Button } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';

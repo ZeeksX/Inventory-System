@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
@@ -15,7 +15,6 @@ const Request = () => {
   const [quantity, setQuantity] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState(''); // Add phone number state
   const [open, setOpen] = useState(false);
-  const navItems = ["Home", "About", "Contact"];
   const [newRequest, setNewRequest] = useState({
     customerName: '',
     customerEmail: '',
@@ -28,10 +27,6 @@ const Request = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [totalCost, setTotalCost] = useState(0); // New state for total cost
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
 
   const handleRegistrationClose = () => {
     setOpen(false);
