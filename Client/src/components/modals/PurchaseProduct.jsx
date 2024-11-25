@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,25 +5,32 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const PurchaseProduct = ({
     username,
     email,
-    phoneNumber, // Add phoneNumber prop
+    phoneNumber,
     itemToPurchase,
     quantity,
     setUsername,
     setEmail,
     setItem,
     setQuantity,
-    setPhoneNumber, // Add setPhoneNumber prop
+    setPhoneNumber,
     handleSubmit,
     totalCost,
-    setTotalCost // New prop for setting total cost
+    setTotalCost
 }) => {
     const [inventory, setInventory] = useState([]);
     const [loading, setLoading] = useState(false);
     const [inventoryMessage, setInventoryMessage] = useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar
 
     // Fetch inventory data when the component mounts
     useEffect(() => {
@@ -81,7 +86,7 @@ const PurchaseProduct = ({
         }
     };
 
-    const handleFormSubmit = (e) => {
+    const handleFormSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission
 
         // Check if all required fields are filled
@@ -90,92 +95,136 @@ const PurchaseProduct = ({
             return; // Prevent submission if fields are empty
         }
 
-        handleSubmit(e); // Call the original handleSubmit function
+        // Handle the purchase request
+        const data = {
+            username,
+            email,
+            phoneNumber,
+            itemToPurchase,
+            quantity,
+            totalCost
+        };
+
+        try {
+            const response = await fetch('http://localhost:3000/api/v1/request/purchase', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const result = await response.json();
+            console.log('Purchase Success:', result);
+            setSnackbarOpen(true); // Open the Snackbar on success
+
+            // Reload the page after a short delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000); // 2 seconds delay before reload
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
     };
 
     return (
-        <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
-            <FormControl fullWidth variant="outlined">
-                <TextField
-                    label="Username"
-                    variant="outlined"
-                    required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-            </FormControl>
-            <FormControl fullWidth variant="outlined">
-                <TextField
-                    label="Email"
-                    variant="outlined"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </FormControl>
-            <FormControl fullWidth variant="outlined">
-                <TextField
-                    label="Phone Number"
-                    variant="outlined"
-                    type="tel"
-                    required
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)} // Ensure the phone number is set correctly
-                />
-            </FormControl>
-            <FormControl fullWidth variant="outlined">
-                <InputLabel id="item-select-label">Item to purchase</InputLabel>
-                <Select
-                    labelId="item-select-label"
-                    id="item-select"
-                    value={itemToPurchase}
-                    onChange={handleItemChange}
-                    label="Item"
-                >
-                    {inventory.map((product) => (
-                        <MenuItem key={product.id} value={product.name}>
-                            {product.name}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            {loading && <p>Loading inventory ...</p>}
-            {inventoryMessage && <p>{inventoryMessage}</p>}
-            <FormControl fullWidth variant="outlined">
-                <TextField
-                    label="Quantity"
-                    type="number"
-                    value={quantity}
-                    onChange={handleQuantityChange}
-                    inputProps={
-                        {
+        <>
+            <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
+                <FormControl fullWidth variant="outlined">
+                    <TextField
+                        label="Username"
+                        variant="outlined"
+                        required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </FormControl>
+                <FormControl fullWidth variant="outlined">
+                    <TextField
+                        label="Email"
+                        variant="outlined"
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </FormControl>
+                <FormControl fullWidth variant="outlined">
+                    <TextField
+                        label="Phone Number"
+                        variant="outlined"
+                        type="tel"
+                        required
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                    />
+                </FormControl>
+                <FormControl fullWidth variant="outlined">
+                    <InputLabel id="item-select-label">Item to purchase</InputLabel>
+                    <Select
+                        labelId="item-select-label"
+                        id="item-select"
+                        value={itemToPurchase}
+                        onChange={handleItemChange}
+                        label="Item"
+                    >
+                        {inventory.map((product) => (
+                            <MenuItem key={product.id} value={product.name}>
+                                {product.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                {loading && <p>Loading inventory ...</p>}
+                {inventoryMessage && <p>{inventoryMessage}</p>}
+                <FormControl fullWidth variant="outlined">
+                    <TextField
+                        label="Quantity"
+                        type="number"
+                        value={quantity}
+                        onChange={handleQuantityChange}
+                        inputProps={{
                             min: 1,
                             max: itemToPurchase ? inventory.find(product => product.name === itemToPurchase)?.stock : undefined,
                         }}
-                    helperText={
-                        itemToPurchase ? `Max available: ${inventory.find(product => product.name === itemToPurchase)?.stock || 0}` : ''
-                    }
-                />
-            </FormControl>
-            <p>Total Cost: ${totalCost.toFixed(2)}</p>
-            <div className="flex flex-row justify-between gap-4 items-center w-full">
-                <Button
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    className="w-24"
-                    sx={{
-                        '&:hover': {
-                            backgroundColor: 'green',
-                        },
-                    }}
-                    disabled={loading || (itemToPurchase && inventory.find(product => product.name === itemToPurchase)?.stock === 0)}
-                >
-                    Submit
-                </Button>
-            </div>
-        </form>
+                        helperText={
+                            itemToPurchase ? `Max available: ${inventory.find(product => product.name === itemToPurchase)?.stock || 0}` : ''
+                        }
+                    />
+                </FormControl>
+                <p>Total Cost: ${totalCost.toFixed(2)}</p>
+                <div className="flex flex-row justify-between gap-4 items-center w-full">
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        className="w-24"
+                        sx={{
+                            '&:hover': {
+                                backgroundColor: 'green',
+                            },
+                        }}
+                        disabled={loading || (itemToPurchase && inventory.find(product => product.name === itemToPurchase)?.stock === 0)}
+                    >
+                        Submit
+                    </Button>
+                </div>
+            </form>
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+                    Order has been placed successfully!
+                </Alert>
+            </Snackbar>
+        </>
     );
 };
 
