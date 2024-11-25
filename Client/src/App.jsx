@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import { AuthProvider } from './components/Auth';
 import Request from './pages/Request';
+import Supplier from './pages/Supplier';
 
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
           <Route path="/profile" element={<Profile sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
           <Route path="/settings" element={<Settings sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />} />
           <Route path='/request' element={<Request sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar}/>}/>
+          <Route path='/supplier' element={<Supplier sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar}/>}/>
         </Routes>
       </Router>
     </AuthProvider>
