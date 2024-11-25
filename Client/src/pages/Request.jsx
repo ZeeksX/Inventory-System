@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
@@ -7,13 +7,19 @@ import RequestService from "../components/modals/RequestService";
 import RegistrationModal from '../components/modals/RegistrationModal';
 import PurchaseProduct from "../components/modals/PurchaseProduct";
 import LoginUser from '../components/LoginUser';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Request = () => {
   const [item, setItem] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [phoneNumber, setPhoneNumber] = useState(''); // Add phone number state
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [open, setOpen] = useState(false);
   const [newRequest, setNewRequest] = useState({
     customerName: '',
@@ -26,7 +32,10 @@ const Request = () => {
   const [formType, setFormType] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [totalCost, setTotalCost] = useState(0); // New state for total cost
+  const [totalCost, setTotalCost] = useState(0);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState('success');
 
   const handleRegistrationClose = () => {
     setOpen(false);
@@ -40,21 +49,18 @@ const Request = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Construct data object with all necessary fields
     const data = {
       username,
       email,
-      phoneNumber, // Include phone number
+      phoneNumber,
       itemToPurchase: item,
       quantity,
-      totalCost, // Include total cost
+      totalCost,
     };
 
-    // Check if all required fields are filled
     if (!username || !email || !phoneNumber || !item || quantity < 1) {
       alert('Please fill out all required fields.');
-      return; // Prevent submission if fields are empty
+      return;
     }
 
     console.log('Data being sent for purchase:', data);
@@ -105,10 +111,24 @@ const Request = () => {
 
       const result = await response.json();
       console.log('Service Request Success:', result);
+      setAlertMessage('Service request has been submitted successfully!');
+      setAlertSeverity('success');
+      setSnackbarOpen(true);
       setModalOpen(false);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
+
       console.error('Error:', error);
+      setAlertMessage('Failed to submit the service request. Please try again.');
+      setAlertSeverity('error');
+      setSnackbarOpen(true);
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   const handleInputChange = (event) => {
@@ -128,11 +148,11 @@ const Request = () => {
     setModalOpen(false);
     setNewRequest({ customerName: '', customerEmail: '', phoneNumber: '', phoneModel: '', issueDescription: '' });
     setQuantity(1);
-    setTotalCost(0); // Reset total cost when closing modal
-    setUsername(''); // Reset username
-    setEmail(''); // Reset email
-    setPhoneNumber(''); // Reset phone number
-    setItem(''); // Reset item
+    setTotalCost(0);
+    setUsername('');
+    setEmail('');
+    setPhoneNumber('');
+    setItem('');
   };
 
   const handleLoginSuccess = () => {
@@ -146,7 +166,6 @@ const Request = () => {
           <div className="hidden lg:flex flex-row items-center w-full h-8 justify-center">
             <Brand />
           </div>
-
           <div className="lg:hidden flex justify-center items-center p-2">
             <Brand />
           </div>
@@ -198,15 +217,15 @@ const Request = () => {
                 email={email}
                 itemToPurchase={item}
                 quantity={quantity}
-                phoneNumber={phoneNumber} // Pass phone number to PurchaseProduct
+                phoneNumber={phoneNumber}
                 setUsername={setUsername}
                 setEmail={setEmail}
                 setItem={setItem}
                 setQuantity={setQuantity}
-                setPhoneNumber={setPhoneNumber} // Pass setPhoneNumber to update phone number
+                setPhoneNumber={setPhoneNumber}
                 handleSubmit={handleSubmit}
                 totalCost={totalCost}
-                setTotalCost={setTotalCost} // Pass setTotalCost to update total cost
+                setTotalCost={setTotalCost}
               />
             ) : (
               <RequestService
@@ -214,11 +233,21 @@ const Request = () => {
                 handleInputChange={handleInputChange}
                 handleSubmitService={handleSubmitService}
                 closeModal={closeModal}
+                snackbarOpen={snackbarOpen}
+                handleSnackbarClose={handleSnackbarClose}
+                alertMessage={alertMessage}
+                alertSeverity={alertSeverity}
               />
             )}
           </Box>
         </Modal>
         <RegistrationModal open={open} onClose={handleRegistrationClose} onSuccess={handleRegistrationSuccess} />
+
+        <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+          <Alert onClose={handleSnackbarClose} severity={alertSeverity} sx={{ width: '100%' }}>
+            {alertMessage}
+          </Alert>
+        </Snackbar>
       </div>
     </>
   );
