@@ -6,7 +6,7 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/
 
 const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
   const [users, setUsers] = useState([]);
-  const [newUser, setNewUser] = useState({ name: '', email: '', role: '' });
+  const [newUser, setNewUser] = useState({ username: '', email: '', password: '', role: '' });
   const [editingUser, setEditingUser] = useState(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
@@ -42,9 +42,9 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
 
   const handleAddUser = async (e) => {
     e.preventDefault();
-    if (newUser.username && newUser.email && newUser.role) {
+    if (newUser.username && newUser.email && newUser.password && newUser.role) {
       try {
-        const response = await fetch('http://localhost:3000/api/v1/users', {
+        const response = await fetch('http://localhost:3000/api/v1/users/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -55,13 +55,15 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
         if (response.ok) {
           const createdUser = await response.json();
           setUsers([...users, createdUser]);
-          setNewUser({ username: '', email: '', role: '' });
+          setNewUser({ username: '', email: '', password: '', role: '' });
         } else {
           console.error("Failed to add user:", response.statusText);
         }
       } catch (error) {
         console.error("Error adding user:", error);
       }
+    } else {
+      console.error("Please fill in all fields.");
     }
   };
 
@@ -128,9 +130,9 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
             <form onSubmit={editingUser ? handleUpdateUser : handleAddUser} className="flex flex-col">
               <input
                 type="text"
-                name="name"
-                placeholder="Name"
-                value={editingUser ? editingUser.name : newUser.name}
+                name="username"
+                placeholder="Username"
+                value={editingUser ? editingUser.username : newUser.username}
                 onChange={handleInputChange}
                 className="mb-4 p-2 border border-gray-300 rounded"
                 required
@@ -140,6 +142,15 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
                 name="email"
                 placeholder="Email"
                 value={editingUser ? editingUser.email : newUser.email}
+                onChange={handleInputChange}
+                className="mb-4 p-2 border border-gray-300 rounded"
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={editingUser ? editingUser.password : newUser.password}
                 onChange={handleInputChange}
                 className="mb-4 p-2 border border-gray-300 rounded"
                 required
@@ -176,7 +187,7 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
               <table className="min-w-full bg-white border border-gray-300">
                 <thead>
                   <tr className="bg-gray-200">
-                    <th className="py-2 px-4 text-left">Name</th>
+                    <th className="py-2 px-4 text-left">Username</th>
                     <th className="py-2 px-4 text-left">Email</th>
                     <th className="py-2 px-4 text-left">Role</th>
                     <th className="py-2 px-4 text-left">Actions</th>
@@ -225,7 +236,7 @@ const UserManagement = ({ toggleSidebar, sidebarOpen }) => {
           </Dialog>
         </div>
       </div>
-    </AuthProvider>
+    </AuthProvider >
   );
 };
 
